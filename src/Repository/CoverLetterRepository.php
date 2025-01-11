@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\LinkedInMessage;
+use App\Entity\CoverLetter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<LinkedInMessage>
+ * @extends ServiceEntityRepository<CoverLetter>
  */
-class LinkedInMessageRepository extends ServiceEntityRepository
+class CoverLetterRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, LinkedInMessage::class);
+        parent::__construct($registry, CoverLetter::class);
     }
 
     //    /**
-    //     * @return LinkedInMessage[] Returns an array of LinkedInMessage objects
+    //     * @return CoverLetter[] Returns an array of CoverLetter objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('l.id', 'ASC')
+    //            ->orderBy('c.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?LinkedInMessage
+    //    public function findOneBySomeField($value): ?CoverLetter
     //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
+    //        return $this->createQueryBuilder('c')
+    //            ->andWhere('c.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()

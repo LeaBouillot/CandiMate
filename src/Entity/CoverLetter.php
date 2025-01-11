@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\LinkedInMessageRepository;
+use App\Repository\CoverLetterRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: LinkedInMessageRepository::class)]
-class LinkedInMessage
+#[ORM\Entity(repositoryClass: CoverLetterRepository::class)]
+class CoverLetter
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,11 +23,11 @@ class LinkedInMessage
     #[ORM\Column]
     private ?\DateTimeImmutable $undated_at = null;
 
-    #[ORM\ManyToOne(inversedBy: 'linkedInMessages')]
+    #[ORM\ManyToOne(inversedBy: 'coverLetters')]
     #[ORM\JoinColumn(nullable: false)]
     private ?JobOffer $jobOffer = null;
 
-    #[ORM\ManyToOne(inversedBy: 'linkedInMessages')]
+    #[ORM\ManyToOne(inversedBy: 'coverLetters')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $app_user = null;
 

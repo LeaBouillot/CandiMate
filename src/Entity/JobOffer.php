@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\JobOfferRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JobOfferRepository::class)]
@@ -45,6 +47,28 @@ class JobOffer
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    /**
+     * @var Collection<int, CoverLetter>
+     */
+    #[ORM\OneToMany(targetEntity: CoverLetter::class, mappedBy: 'jobOffer', orphanRemoval: true)]
+    private Collection $coverLetters;
+
+    #[ORM\ManyToOne(inversedBy: 'jobOffers')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $app_user = null;
+
+    /**
+     * @var Collection<int, LinkedInMessage>
+     */
+    #[ORM\OneToMany(targetEntity: LinkedInMessage::class, mappedBy: 'jobOffer', orphanRemoval: true)]
+    private Collection $linkedInMessages;
+
+    public function __construct()
+    {
+        $this->coverLetters = new ArrayCollection();
+        $this->linkedInMessages = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -182,4 +206,77 @@ class JobOffer
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, CoverLetter>
+     */
+    public function getCoverLetters(): Collection
+    {
+        return $this->coverLetters;
+    }
+
+    public function addCoverLetter(CoverLetter $coverLetter): static
+    {
+        if (!$this->coverLetters->contains($coverLetter)) {
+            $this->coverLetters->add($coverLetter);
+            $coverLetter->setJobOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCoverLetter(CoverLetter $coverLetter): static
+    {
+        if ($this->coverLetters->removeElement($coverLetter)) {
+            // set the owning side to null (unless already changed)
+            if ($coverLetter->getJobOffer() === $this) {
+                $coverLetter->setJobOffer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAppUser(): ?User
+    {
+        return $this->app_user;
+    }
+
+    public function setAppUser(?User $app_user): static
+    {
+        $this->app_user = $app_user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LinkedInMessage>
+     */
+    public function getLinkedInMessages(): Collection
+    {
+        return $this->linkedInMessages;
+    }
+
+    public function addLinkedInMessage(LinkedInMessage $linkedInMessage): static
+    {
+        if (!$this->linkedInMessages->contains($linkedInMessage)) {
+            $this->linkedInMessages->add($linkedInMessage);
+            $linkedInMessage->setJobOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLinkedInMessage(LinkedInMessage $linkedInMessage): static
+    {
+        if ($this->linkedInMessages->removeElement($linkedInMessage)) {
+            // set the owning side to null (unless already changed)
+            if ($linkedInMessage->getJobOffer() === $this) {
+                $linkedInMessage->setJobOffer(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
