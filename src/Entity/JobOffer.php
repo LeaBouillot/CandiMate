@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enum\JobStatus;
 use App\Repository\JobOfferRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JobOfferRepository::class)]
@@ -12,51 +14,42 @@ class JobOffer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
+
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 180)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 180)]
     private ?string $company = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 120, nullable: true)]
     private ?string $link = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $location = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 180, nullable: true)]
     private ?string $salary = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $contact_person = null;
+    #[ORM\Column(length: 120, nullable: true)]
+    private ?string $contactPerson = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $contact_email = null;
+    #[ORM\Column(length: 120, nullable: true)]
+    private ?string $contactEmail = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $application_date = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $status = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updated_at = null;
-
-    /**
-     * @var Collection<int, CoverLetter>
-     */
-    #[ORM\OneToMany(targetEntity: CoverLetter::class, mappedBy: 'jobOffer', orphanRemoval: true)]
-    private Collection $coverLetters;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $applicationDate = null;
 
     #[ORM\ManyToOne(inversedBy: 'jobOffers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $app_user = null;
+
+
+    // Add the enum field for status
+    #[ORM\Column(type: 'string', enumType: JobStatus::class)]
+    private JobStatus $status;
 
     /**
      * @var Collection<int, LinkedInMessage>
@@ -64,10 +57,16 @@ class JobOffer
     #[ORM\OneToMany(targetEntity: LinkedInMessage::class, mappedBy: 'jobOffer', orphanRemoval: true)]
     private Collection $linkedInMessages;
 
+    /**
+     * @var Collection<int, CoverLetter>
+     */
+    #[ORM\OneToMany(targetEntity: CoverLetter::class, mappedBy: 'jobOffer', orphanRemoval: true)]
+    private Collection $coverLetters;
+
     public function __construct()
     {
-        $this->coverLetters = new ArrayCollection();
         $this->linkedInMessages = new ArrayCollection();
+        $this->coverLetters = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,102 +136,36 @@ class JobOffer
 
     public function getContactPerson(): ?string
     {
-        return $this->contact_person;
+        return $this->contactPerson;
     }
 
-    public function setContactPerson(?string $contact_person): static
+    public function setContactPerson(?string $contactPerson): static
     {
-        $this->contact_person = $contact_person;
+        $this->contactPerson = $contactPerson;
 
         return $this;
     }
 
     public function getContactEmail(): ?string
     {
-        return $this->contact_email;
+        return $this->contactEmail;
     }
 
-    public function setContactEmail(?string $contact_email): static
+    public function setContactEmail(?string $contactEmail): static
     {
-        $this->contact_email = $contact_email;
+        $this->contactEmail = $contactEmail;
 
         return $this;
     }
 
-    public function getApplicationDate(): ?string
+    public function getApplicationDate(): ?\DateTimeInterface
     {
-        return $this->application_date;
+        return $this->applicationDate;
     }
 
-    public function setApplicationDate(string $application_date): static
+    public function setApplicationDate(\DateTimeInterface $applicationDate): static
     {
-        $this->application_date = $application_date;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
-    {
-        $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, CoverLetter>
-     */
-    public function getCoverLetters(): Collection
-    {
-        return $this->coverLetters;
-    }
-
-    public function addCoverLetter(CoverLetter $coverLetter): static
-    {
-        if (!$this->coverLetters->contains($coverLetter)) {
-            $this->coverLetters->add($coverLetter);
-            $coverLetter->setJobOffer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCoverLetter(CoverLetter $coverLetter): static
-    {
-        if ($this->coverLetters->removeElement($coverLetter)) {
-            // set the owning side to null (unless already changed)
-            if ($coverLetter->getJobOffer() === $this) {
-                $coverLetter->setJobOffer(null);
-            }
-        }
+        $this->applicationDate = $applicationDate;
 
         return $this;
     }
@@ -246,6 +179,17 @@ class JobOffer
     {
         $this->app_user = $app_user;
 
+        return $this;
+    }
+    // Add getters and setters for the status enum
+    public function getStatus(): JobStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(JobStatus $status): self
+    {
+        $this->status = $status;
         return $this;
     }
 
@@ -279,4 +223,33 @@ class JobOffer
         return $this;
     }
 
+    /**
+     * @return Collection<int, CoverLetter>
+     */
+    public function getCoverLetters(): Collection
+    {
+        return $this->coverLetters;
+    }
+
+    public function addCoverLetter(CoverLetter $coverLetter): static
+    {
+        if (!$this->coverLetters->contains($coverLetter)) {
+            $this->coverLetters->add($coverLetter);
+            $coverLetter->setJobOffer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCoverLetter(CoverLetter $coverLetter): static
+    {
+        if ($this->coverLetters->removeElement($coverLetter)) {
+            // set the owning side to null (unless already changed)
+            if ($coverLetter->getJobOffer() === $this) {
+                $coverLetter->setJobOffer(null);
+            }
+        }
+
+        return $this;
+    }
 }

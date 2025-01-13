@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LinkedInMessageRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class LinkedInMessage
 {
     #[ORM\Id]
@@ -18,10 +19,10 @@ class LinkedInMessage
     private ?string $content = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $undated_at = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'linkedInMessages')]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,6 +31,21 @@ class LinkedInMessage
     #[ORM\ManyToOne(inversedBy: 'linkedInMessages')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $app_user = null;
+
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
 
     public function getId(): ?int
     {
@@ -50,24 +66,24 @@ class LinkedInMessage
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUndatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->undated_at;
+        return $this->updatedAt;
     }
 
-    public function setUndatedAt(\DateTimeImmutable $undated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->undated_at = $undated_at;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
