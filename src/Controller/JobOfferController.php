@@ -15,5 +15,3 @@ final class JobOfferController extends AbstractController
     {
         $jobs = $jor->findBy(['app_user'=>$this->getUser()]);
         return $this->render('job_offer/list.html.twig', ['jobs' => '$jobs']);
-    }
-}

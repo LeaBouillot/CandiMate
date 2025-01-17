@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class RegislationController extends AbstractController
+class RegislationController extends AbstractController
 {
     #[Route('/regislation', name: 'app_regislation')]
     public function index(): Response
