@@ -48,8 +48,8 @@ class JobOffer
 
 
     // Add the enum field for status
-    #[ORM\Column(type: 'string', enumType: JobStatus::class)]
-    private JobStatus $status;
+    // #[ORM\Column(type: 'string', enumType: JobStatus::class)]
+    // private JobStatus $status;
 
     /**
      * @var Collection<int, LinkedInMessage>
@@ -182,16 +182,16 @@ class JobOffer
         return $this;
     }
     // Add getters and setters for the status enum
-    public function getStatus(): JobStatus
-    {
-        return $this->status;
-    }
+    // public function getStatus(): JobStatus
+    // {
+    //     return $this->status;
+    // }
 
-    public function setStatus(JobStatus $status): self
-    {
-        $this->status = $status;
-        return $this;
-    }
+    // public function setStatus(JobStatus $status): self
+    // {
+    //     $this->status = $status;
+    //     return $this;
+    // }
 
     /**
      * @return Collection<int, LinkedInMessage>
