@@ -2,19 +2,20 @@
 
 namespace App\Controller;
 
-use App\Repository\JobOfferRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HomeController extends AbstractController
+final class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function index(JobOfferRepository $jr): Response
+    #[Route('/', name: 'home')]
+    public function index(Request $request): Response
     {
-        $jobOffers = $jr->findAll();
-        return $this->render('home/index.html.twig', [
-            'jobOffers' => $jobOffers,
+        // dd($request);
+        return new Response('Bonjour' . $request->query->get('name', ' Chère Client'));
+        return $this->render('/index.html.twig', [
+            'controller_name' => 'HomeController',
         ]);
     }
 }

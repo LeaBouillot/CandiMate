@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class KanbanController extends AbstractController
+
 {
     #[Route('/kanban', name: 'app_kanban')]
     public function index(): Response

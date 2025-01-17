@@ -2,17 +2,16 @@
 
 namespace App\Controller;
 
+use App\Repository\JobOfferRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class JobOfferController extends AbstractController
+final class JobOfferController extends AbstractController
 {
-    #[Route('/job/offer', name: 'app_job_offer')]
-    public function index(): Response
+    #[Route('/job-offers', name: 'app_job_offer_all', methods:'GET')]
+    public function all(JobOfferRepository $jor): Response
     {
-        return $this->render('job_offer/index.html.twig', [
-            'controller_name' => 'JobOfferController',
-        ]);
-    }
-}
+        $jobs = $jor->findBy(['app_user'=>$this->getUser()]);
+        return $this->render('job_offer/list.html.twig', ['jobs' => '$jobs']);
