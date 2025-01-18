@@ -10,8 +10,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class JobOfferController extends AbstractController
 {
-    #[Route('/job-offers', name: 'app_job_offer_all', methods:'GET')]
+    #[Route('/job-offers', name: 'app_job_offer_all', methods: 'GET')]
     public function all(JobOfferRepository $jor): Response
     {
-        $jobs = $jor->findBy(['app_user'=>$this->getUser()]);
+        $jobs = $jor->findBy(['app_user' => $this->getUser()]);
         return $this->render('job_offer/list.html.twig', ['jobs' => '$jobs']);
+    }
+};
