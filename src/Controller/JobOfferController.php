@@ -13,6 +13,9 @@ final class JobOfferController extends AbstractController
     public function all(JobOfferRepository $jr): Response
     {
         $jobOffers = $jr->findBy(['app_user' => $this->getUser()]);
-        return $this->render('job_offer/list.html.twig', ['job_offers' => $jobOffers,]);
+        return $this->render(
+            'job_offer/list.html.twig',
+            ['job_offers' => $jobOffers,]
+        );
     }
 };
