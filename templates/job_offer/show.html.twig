@@ -104,58 +104,6 @@
         </div>
 
         {# Related Items Section #}
-        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {# Cover Letters Section #}
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Cover Letters</h2>
-                    <a href="{{ path('app_cover_letter_new', {'jobOfferId': job_offer.id}) }}" 
-                       class="text-blue-500 hover:text-blue-700">
-                        <i class="fas fa-plus mr-1"></i>Add New
-                    </a>
-                </div>
-                {% if job_offer.coverLetters|length > 0 %}
-                    <ul class="space-y-3">
-                        {% for letter in job_offer.coverLetters %}
-                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                                <span class="text-gray-600">Created: {{ letter.createdAt|date('d/m/Y H:i') }}</span>
-                                <a href="{{ path('app_cover_letter_edit', {'id': letter.id}) }}"
-                                   class="text-blue-500 hover:text-blue-700">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-gray-500 text-center py-4">No cover letters yet</p>
-                {% endif %}
-            </div>
-
-            {# LinkedIn Messages Section #}
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold text-gray-800">LinkedIn Messages</h2>
-                    <a href="{{ path('app_linkedin_message_new', {'jobOfferId': job_offer.id}) }}"
-                       class="text-blue-500 hover:text-blue-700">
-                        <i class="fas fa-plus mr-1"></i>Add New
-                    </a>
-                </div>
-                {% if job_offer.linkedInMessages|length > 0 %}
-                    <ul class="space-y-3">
-                        {% for message in job_offer.linkedInMessages %}
-                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded">
-                                <span class="text-gray-600">Created: {{ message.createdAt|date('d/m/Y H:i') }}</span>
-                                <a href="{{ path('app_linkedin_message_edit', {'id': message.id}) }}"
-                                   class="text-blue-500 hover:text-blue-700">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-gray-500 text-center py-4">No LinkedIn messages yet</p>
-                {% endif %}
-            </div>
-        </div>
+       
     </div>
 {% endblock %}
