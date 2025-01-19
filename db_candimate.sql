@@ -1,23 +1,11 @@
-
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
-
-
-
+-- Active: 1737127743394@@127.0.0.1@3307@db_profil
 CREATE DATABASE db_candimate;
+    DEFAULT CHARACTER SET = 'utf8mb4';
+
+
+
 USE db_candimate;
 
-
-
---
-
--- --------------------------------------------------------
-
---
--- Structure de la table `cover_letter`
---
 
 DROP TABLE IF EXISTS `cover_letter`;
 CREATE TABLE IF NOT EXISTS `cover_letter` (
@@ -50,24 +38,6 @@ INSERT INTO `cover_letter` (`id`, `job_offer_id`, `app_user_id`, `content`, `cre
 (10, 14, 10, '<br>\nCher/Chère Responsable du recrutement,<br>\n<br>\nJe vous adresse ma candidature pour le poste de Développeur Ruby chez Pivotal à Paris.<br>\n<br>\nJe suis un développeur Ruby expérimenté, avec une expertise approfondie dans le développement d\'applications backend performantes et évolutives.<br>\n<br>\nJe maîtrise les frameworks Ruby on Rails et Sinatra et j\'ai travaillé sur des projets d\'envergure dans des environnements Agile.<br>\n<br>\nJe serais ravi de discuter plus en détail de ma candidature avec vous.<br>\n<br>\nCordialement,<br>\n<br>\n[Votre nom complet]', '2024-10-07 16:22:00', '2024-10-07 16:22:00');
 
 
--- --------------------------------------------------------
-
---
--- Structure de la table `doctrine_migration_versions`
---
-
-
-
---
--- Déchargement des données de la table `doctrine_migration_versions`
---
-
-
--- --------------------------------------------------------
-
---
--- Structure de la table `job_offer`
---
 
 DROP TABLE IF EXISTS `job_offer`;
 CREATE TABLE IF NOT EXISTS `job_offer` (
@@ -88,9 +58,7 @@ CREATE TABLE IF NOT EXISTS `job_offer` (
   KEY `IDX_288A3A4E4A3353D8` (`app_user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Déchargement des données de la table `job_offer`
---
+
 
 INSERT INTO `job_offer` (`id`, `app_user_id`, `title`, `company`, `link`, `location`, `salary`, `contact_person`, `contact_email`, `application_date`, `status`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Développeur Informatique Industrielle H/F', 'SPIE Industrie', 'Le Rheu - 35', 'Le Rheu - 35', '1425', 'devim', 'devim@gmail.com', '2024-10-08', 'A postuler', '2024-10-07 14:24:02', '2024-10-07 14:31:07'),
@@ -120,12 +88,6 @@ INSERT INTO `job_offer` (`id`, `app_user_id`, `title`, `company`, `link`, `locat
 (25, 20, 'Développeur React.js', 'Sopra Steria', 'Marseille', 'Marseille', '5400', 'victor', 'victor@gmail.com', '2025-02-20', 'Accepté', '2024-10-07 14:58:30', '2024-10-07 14:58:30');
 
 
-
--- --------------------------------------------------------
-
---
--- Structure de la table `linked_in_message`
---
 
 DROP TABLE IF EXISTS `linked_in_message`;
 CREATE TABLE IF NOT EXISTS `linked_in_message` (
@@ -165,11 +127,6 @@ INSERT INTO `linked_in_message` (`id`, `job_offer_id`, `app_user_id`, `content`,
 (20, 24, 20, 'Bonjour l\'équipe Facebook,<br><br>\n\nJe vous adresse ma candidature pour le poste de Développeur Python.<br><br>\n\nAvec plusieurs années d\'expérience en Python, Django et Flask, je suis convaincu que mes compétences seraient un atout pour vos projets de développement.<br><br>\n\nJe serais ravi de discuter plus en détail de ma candidature avec vous.<br><br>\n\nCordialement,<br>\nLouis Martin', '2024-10-07 16:45:00', '2024-10-07 16:45:00');
 
 
--- --------------------------------------------------------
-
---
--- Structure de la table `messenger_messages`
---
 
 DROP TABLE IF EXISTS `messenger_messages`;
 CREATE TABLE IF NOT EXISTS `messenger_messages` (
@@ -207,45 +164,19 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `UNIQ_IDENTIFIER_EMAIL` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE user
-ADD COLUMN first_name VARCHAR(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-ADD COLUMN last_name VARCHAR(80) COLLATE utf8mb4_unicode_ci NOT NULL,
-ADD COLUMN created_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)',
-ADD COLUMN updated_at DATETIME NOT NULL COMMENT '(DC2Type:datetime_immutable)';
-
-
---
--- Déchargement des données de la table `user`
---
 
 INSERT INTO `user` (`id`, `email`, `roles`, `password`, `first_name`, `last_name`, `created_at`, `updated_at`, `image`) VALUES
-(1, 'admin@email.com', '[\"ROLE_USER\"]', '$2y$13$aG2OcjtD2xZUsSqYcPmsw.ExR9aHtgj3eBhAhsnTtkp9/CkWRZMXq', 'admin', 'admin', '2024-10-07 14:20:54', '2024-10-07 14:20:54', NULL);
+(1, 'admin@email.com', '[\"ROLE_USER\"]', 'azertyui', 'admin', 'admin', '2024-10-07 14:20:54', '2024-10-07 14:20:54', NULL);
 
---
--- Contraintes pour les tables déchargées
---
 
---
--- Contraintes pour la table `cover_letter`
---
 ALTER TABLE `cover_letter`
   ADD CONSTRAINT `FK_EBE6B473481D195` FOREIGN KEY (`job_offer_id`) REFERENCES `job_offer` (`id`),
   ADD CONSTRAINT `FK_EBE6B474A3353D8` FOREIGN KEY (`app_user_id`) REFERENCES `user` (`id`);
 
---
--- Contraintes pour la table `job_offer`
---
+
 ALTER TABLE `job_offer`
   ADD CONSTRAINT `FK_288A3A4E4A3353D8` FOREIGN KEY (`app_user_id`) REFERENCES `user` (`id`);
 
---
--- Contraintes pour la table `linked_in_message`
---
 ALTER TABLE `linked_in_message`
   ADD CONSTRAINT `FK_6ACAC8D63481D195` FOREIGN KEY (`job_offer_id`) REFERENCES `job_offer` (`id`),
   ADD CONSTRAINT `FK_6ACAC8D64A3353D8` FOREIGN KEY (`app_user_id`) REFERENCES `user` (`id`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
