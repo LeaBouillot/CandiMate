@@ -1,20 +1,188 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block title %}Tableau de bord{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="container my-4">
+    <h1 class="mb-4">Tableau de bord</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {# Vue d'ensemble #}
+    <div class="mb-4 row g-4">
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Total des candidatures</h6>
+                    <h2 class="mb-0 card-text">{{ total_applications }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Taux d'entretiens</h6>
+                    <h2 class="mb-0 card-text">{{ interview_rate }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Taux de réussite</h6>
+                    <h2 class="mb-0 card-text">{{ success_rate }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">En cours</h6>
+                    <h2 class="mb-0 card-text">
+                        {{ stats_by_status['En attente']|length + stats_by_status['Entretien']|length }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/leacielbleu/Documents/CandiMate/src/Controller/DashboardController.php</code></li>
-        <li>Your template at <code>/Users/leacielbleu/Documents/CandiMate/templates/dashboard/index.html.twig</code></li>
-    </ul>
+    <div class="row g-4">
+        {# Statistiques par statut #}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0 card-title">Statut des candidatures</h5>
+                </div>
+                <div class="card-body">
+                    {% set badgeClass = {
+                        'A postuler': 'bg-primary',
+                        'En attente': 'bg-warning',
+                        'Entretien': 'bg-info',
+                        'Refusé': 'bg-danger',
+                        'Accepté': 'bg-success'
+                    } %}
+                    
+                    {% for status in statuses %}
+                        <div class="mb-3">
+                            <div class="mb-1 d-flex justify-content-between align-items-center">
+                                <span>{{ status.label }}</span>
+                                <span class="badge {{ badgeClass[status.value] }}">
+                                    {{ stats_by_status[status.value]|length }}
+                                </span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar {{ badgeClass[status.value] }}" 
+                                     role="progressbar"
+                                     style="width: {{ total_applications ? (stats_by_status[status.value]|length / total_applications * 100) : 0 }}%">
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {# Dernières candidatures #}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 card-title">Dernières candidatures</h5>
+                    <a href="{{ path('app_job_offer_list') }}" class="btn btn-sm btn-outline-primary">
+                        Voir tout
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if recent_applications is empty %}
+                        <p class="mb-0 text-muted">Aucune candidature récente</p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Poste</th>
+                                        <th>Entreprise</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for application in recent_applications %}
+                                        <tr>
+                                            <td>{{ application.applicationDate|date('d/m/Y') }}</td>
+                                            <td>
+                                                <a href="{{ path('app_job_offer_show', {'id': application.id}) }}"
+                                                   class="text-decoration-none">
+                                                    {{ application.title }}
+                                                </a>
+                                            </td>
+                                            <td>{{ application.company }}</td>
+                                            <td>
+                                                <span class="badge {{ badgeClass[application.status.value] }}">
+                                                    {{ application.status.label }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Statistiques mensuelles #}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0 card-title">Évolution mensuelle</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mois</th>
+                                    <th>Candidatures</th>
+                                    <th>Entretiens</th>
+                                    <th>Acceptées</th>
+                                    <th>Taux d'entretien</th>
+                                    <th>Taux de réussite</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for month, stats in monthly_stats %}
+                                    <tr>
+                                        <td>{{ month|date('m/Y') }}</td>
+                                        <td>{{ stats.total }}</td>
+                                        <td>{{ stats.interview }}</td>
+                                        <td>{{ stats.accepted }}</td>
+                                        <td>
+                                            {% set interview_rate = stats.total ? (stats.interview / stats.total * 100)|round(1) : 0 %}
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-info" 
+                                                     role="progressbar"
+                                                     style="width: {{ interview_rate }}%">
+                                                </div>
+                                            </div>
+                                            <small>{{ interview_rate }}%</small>
+                                        </td>
+                                        <td>
+                                            {% set success_rate = stats.total ? (stats.accepted / stats.total * 100)|round(1) : 0 %}
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-success" 
+                                                     role="progressbar"
+                                                     style="width: {{ success_rate }}%">
+                                                </div>
+                                            </div>
+                                            <small>{{ success_rate }}%</small>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
