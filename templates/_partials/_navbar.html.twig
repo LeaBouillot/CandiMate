@@ -1,54 +1,114 @@
 <nav class="text-white bg-gray-800">
-    <div class="container flex items-center justify-between px-6 py-4 mx-auto">
-        <!-- Logo -->
-        <a href="{{ path('app_home') }}" class="flex items-center">
-            <img src="{{ asset('assets/images/logo_candi.png') }}" alt="Logo Candimate" class="w-auto h-10 mr-2" />
-            <span class="text-lg font-bold">Candimate</span>
+  <div class="container flex items-center justify-between px-6 py-4 mx-auto">
+    <!-- Logo -->
+    <a href="{{ path('app_home') }}" class="flex items-center">
+      <img
+        src="{{ asset('assets/images/logo_candi.png') }}"
+        alt="Logo Candimate"
+        class="w-auto h-10 mr-2"
+      />
+      <span class="text-lg font-bold">Candimate</span>
+    </a>
+
+    <!-- Menu -->
+    <ul class="hidden space-x-8 md:flex">
+      <li><a href="/" class="hover:text-blue-400">Home</a></li>
+      <li><a href="/job-offers" class="hover:text-blue-400">Job Offer</a></li>
+      <li><a href="/dashboard" class="hover:text-blue-400">Dashboard</a></li>
+      <li><a href="/kanban" class="hover:text-blue-400">Kanban</a></li>
+      <li>
+        <a href="/cover-letter" class="hover:text-blue-400">Cover Letter</a>
+      </li>
+      <li><a href="/login" class="hover:text-blue-400">Connexion</a></li>
+      <!-- Icône de recherche -->
+      <li>
+        <a href="#" class="flex items-center hover:text-blue-400">
+          <svg
+            class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14zm10 10l-4.35-4.35"
+            />
+          </svg>
         </a>
+      </li>
+    </ul>
 
-        <!-- Menu -->
-        <ul class="hidden space-x-8 md:flex">
-            <li><a href="#" class="hover:text-blue-400">Home</a></li>
-            <li><a href="#" class="hover:text-blue-400">Job Offer</a></li>
-            <li><a href="#" class="hover:text-blue-400">Kanban</a></li>
-            <li><a href="#" class="hover:text-blue-400">Cover Letter</a></li>
-            <li><a href="#" class="hover:text-blue-400">Contact</a></li>
-            <li><a href="#" class="hover:text-blue-400">Connexion</a></li>
-            <!-- Icône de recherche -->
-            <li>
-                <a href="#" class="flex items-center hover:text-blue-400">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14zm10 10l-4.35-4.35" />
-                    </svg>
-                </a>
-            </li>
-        </ul>
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-button"
+      class="text-gray-300 md:hidden hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <svg
+        class="w-6 h-6"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16m-7 6h7"
+        />
+      </svg>
+    </button>
+  </div>
 
-        <!-- Mobile Menu Button -->
-        <button id="mobile-menu-button" class="text-gray-300 md:hidden hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-        </button>
-    </div>
-
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden bg-gray-700 md:hidden">
-        <ul class="p-4 space-y-2">
-            <li><a href="#" class="block text-white hover:text-blue-400">Home</a></li>
-            <li><a href="#" class="block text-white hover:text-blue-400">Job Offer</a></li>
-            <li><a href="#" class="block text-white hover:text-blue-400">Kanban</a></li>
-            <li><a href="#" class="block text-white hover:text-blue-400">Cover Letter</a></li>
-            <li><a href="#" class="block text-white hover:text-blue-400">Contact</a></li>
-            <li><a href="#" class="block text-white hover:text-blue-400">Connexion</a></li>
-            <!-- Icône de recherche -->
-            <li>
-                <a href="#" class="flex items-center block text-white hover:text-blue-400">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14zm10 10l-4.35-4.35" />
-                    </svg>
-                </a>
-            </li>
-        </ul>
-    </div>
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden bg-gray-700 md:hidden">
+    <ul class="p-4 space-y-2">
+      <li><a href="/" class="block text-white hover:text-blue-400">Home</a></li>
+      <li>
+        <a href="/job-offers" class="block text-white hover:text-blue-400"
+          >Job Offer</a
+        >
+      </li>
+      <li>
+        <a href="/kanban" class="block text-white hover:text-blue-400"
+          >Kanban</a
+        >
+      </li>
+      <li>
+        <a href="/cover-letter" class="block text-white hover:text-blue-400"
+          >Cover Letter</a
+        >
+      </li>
+      <li>
+        <a href="/login" class="block text-white hover:text-blue-400"
+          >Connexion</a
+        >
+      </li>
+      <!-- Icône de recherche -->
+      <li>
+        <a
+          href="#"
+          class="flex items-center block text-white hover:text-blue-400"
+        >
+          <svg
+            class="w-6 h-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14zm10 10l-4.35-4.35"
+            />
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </div>
 </nav>

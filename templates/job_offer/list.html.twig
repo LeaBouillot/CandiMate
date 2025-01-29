@@ -1,21 +1,71 @@
-
 {% extends 'base.html.twig' %}
 
-{% block title %}Tout vos offres d'emplois{% endblock %}
+{% block title %}Mes offres d'emploi{% endblock %}
 
 {% block body %}
-<h1 class="mt-16 text-center">Tout vos offres d'emplois
-	</h1>
-	<div class="w-2/6 h-0.5 bg-orange-400 m-auto mb-8"></div>
-	<article class="w-1/4 m-auto">
-		{% for item in jobs %}
-			<div class="mb-6">
-				<a href="{{path('app_job_offer_show', {'id': item.id})}}" class="text-2xl font-semibold text-orange-400 hover:text-orange-300">•
-					{{item.title}}</a>
-				<p class="pl-4">Entreprise :
-					{{item.company}}</p>
-			</div>
-		{% endfor %}
-	</article>
+    <div class="container px-4 py-8 mx-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold">Mes offres d'emploi</h1>
+            <a href="{{ path('app_job_offer_new') }}" class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700">
+                Ajouter une offre
+            </a>
+        </div>
 
+        {% for message in app.flashes('success') %}
+            <div class="p-4 mb-4 text-green-700 bg-green-100 border-l-4 border-green-500" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Titre</th>
+                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Entreprise</th>
+                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Statut</th>
+                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Date</th>
+                        <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for job_offer in job_offers %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ job_offer.title }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ job_offer.company }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    {% if job_offer.status == 'A postuler' %}
+                                        bg-yellow-100 text-yellow-800
+                                    {% elseif job_offer.status == 'En attente' %}
+                                        bg-blue-100 text-blue-800
+                                    {% elseif job_offer.status == 'Entretien' %}
+                                        bg-purple-100 text-purple-800
+                                    {% elseif job_offer.status == 'Refusé' %}
+                                        bg-red-100 text-red-800
+                                    {% elseif job_offer.status == 'Accepté' %}
+                                        bg-green-100 text-green-800
+                                    {% endif %}">
+                                    {{ job_offer.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ job_offer.applicationDate|date('d/m/Y') }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
+                                <a href="{{ path('app_job_offer_show', {'id': job_offer.id}) }}" class="mr-2 text-blue-600 hover:text-blue-900">Voir</a>
+                                <a href="{{ path('app_job_offer_edit', {'id': job_offer.id}) }}" class="mr-2 text-indigo-600 hover:text-indigo-900">Modifier</a>
+                                <form method="post" action="{{ path('app_job_offer_delete', {'id': job_offer.id}) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ job_offer.id) }}">
+                                    <button class="text-red-600 hover:text-red-900">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucune offre d'emploi trouvée</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock %}
