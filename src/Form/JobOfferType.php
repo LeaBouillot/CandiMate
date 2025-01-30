@@ -7,7 +7,7 @@ use App\Enum\JobStatus;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
@@ -124,25 +124,26 @@ class JobOfferType extends AbstractType
                 ],
                 'data' => new \DateTime(),
             ])
-            ->add('status', ChoiceType::class, [
-                'choices' => [
-                    'Apply' => JobStatus::A_POSTULER,
-                    'On Hold' => JobStatus::EN_ATTENTE,
-                    'Interview' => JobStatus::ENTRETIEN,
-                    'Rejected' => JobStatus::REFUSE,
-                    'Accepted' => JobStatus::ACCEPTE,
-                ],
-                'label' => 'Status',
+            ->add('status', EnumType::class, [
+                'class' => JobStatus::class,
+                'label' => 'Statut',
+                'required' => true,
                 'constraints' => [
                     new NotBlank(['message' => 'Le statut est obligatoire'])
                 ],
+                'choice_label' => fn (JobStatus $status) => $status->label(),
+                'attr' => [
+                    'class' => 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
+                ],
+                'placeholder' => 'Choisir un statut'
             ])
-            // ->add('save', SubmitType::class, [
-            //     'label' => 'Enregistrer',
-            //     'attr' => [
-            //         'class' => 'btn btn-primary'
-            //     ],
-            // ])
+
+            ->add('save', SubmitType::class, [
+                'label' => 'Enregistrer',
+                'attr' => [
+                    'class' => 'px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-blue-700'
+                ],
+            ])
         ;
     }
 
@@ -150,6 +151,9 @@ class JobOfferType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => JobOffer::class,
+            'attr' => [
+                'novalidate' => 'novalidate'
+            ]
         ]);
     }
 }

@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: JobOfferRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class JobOffer
 {
     #[ORM\Id]
@@ -42,14 +43,37 @@ class JobOffer
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $applicationDate = null;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->setUpdatedAtValue();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
     #[ORM\ManyToOne(inversedBy: 'jobOffers')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $app_user = null;
 
 
-    // Add the enum field for status
-    #[ORM\Column(type: 'string', enumType: JobStatus::class)]
-    private JobStatus $status;
+    // Add the enumType for status
+    #[ORM\Column(type: 'string', length: 50, enumType: JobStatus::class)]
+    private ?JobStatus $status = JobStatus::A_POSTULER;
 
     /**
      * @var Collection<int, LinkedInMessage>
@@ -158,6 +182,24 @@ class JobOffer
         return $this;
     }
 
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
     public function getApplicationDate(): ?\DateTimeInterface
     {
         return $this->applicationDate;
@@ -182,16 +224,18 @@ class JobOffer
         return $this;
     }
     // Add getters and setters for the status enum
-    public function getStatus(): JobStatus
+    public function getStatus(): ?JobStatus
     {
         return $this->status;
     }
-
-    public function setStatus(JobStatus $status): self
+    
+    public function setStatus(?JobStatus $status): self
     {
         $this->status = $status;
         return $this;
     }
+    
+    
 
     /**
      * @return Collection<int, LinkedInMessage>

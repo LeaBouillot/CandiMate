@@ -12,12 +12,14 @@ enum JobStatus: string
 
     public function label(): string
     {
-        return match($this) {
-            self::A_POSTULER => 'A postuler',
-            self::EN_ATTENTE => 'En attente',
-            self::ENTRETIEN => 'Entretien',
-            self::REFUSE => 'Refusé',
-            self::ACCEPTE => 'Accepté',
-        };
+        return $this->value;
+    }
+
+    public static function getLabels(): array
+    {
+        return array_combine(
+            array_column(self::cases(), 'value'),
+            array_column(self::cases(), 'value')
+        );
     }
 }

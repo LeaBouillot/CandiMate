@@ -1,20 +1,167 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello KanbanController!{% endblock %}
+{% block title %}Kanban des candidatures{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .kanban-container {
+        overflow-x: auto;
+        min-height: calc(100vh - 200px);
+    }
+    .kanban-column {
+        min-width: 300px;
+        max-width: 300px;
+    }
+    .kanban-card {
+        transition: all 0.3s ease;
+    }
+    .kanban-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card-count {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="py-4 container-fluid">
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <h1 class="mb-0 h3">Kanban des candidatures</h1>
+        <a href="{{ path('app_job_offer_new') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>Nouvelle candidature
+        </a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <div class="kanban-container">
+        <div class="gap-4 d-flex">
+            {% for status, column in columns %}
+                <div class="kanban-column">
+                    <div class="card h-100">
+                        {# <div class="card-header {{ column.border_class }} border-3 border-bottom"> #}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ column.title }}</h5>
+                                {# <span class="card-count {{ column.badge_class }}">
+                                    {{ column.offers|length }}
+                                </span> #}
+                            </div>
+                        {# </div> #}
+                        <div class="p-2 card-body">
+                            <div class="gap-2 d-flex flex-column">
+                                {% if column.offers is empty %}
+                                    <div class="p-3 text-center text-muted">
+                                        <i class="mb-2 bi bi-inbox fs-2 d-block"></i>
+                                        Aucune candidature
+                                    </div>
+                                {% else %}
+                                    {% for offer in column.offers %}
+                                        <div class="card kanban-card">
+                                            <div class="card-body">
+                                                <h6 class="mb-1 card-title text-truncate">
+                                                    <a href="{{ path('app_job_offer_show', {'id': offer.id}) }}" 
+                                                       class="text-decoration-none">
+                                                        {{ offer.title }}
+                                                    </a>
+                                                </h6>
+                                                <p class="mb-2 card-text small text-muted">
+                                                    <i class="bi bi-building me-1"></i>
+                                                    {{ offer.company }}
+                                                </p>
+                                                {% if offer.location %}
+                                                    <p class="mb-2 card-text small">
+                                                        <i class="bi bi-geo-alt me-1"></i>
+                                                        {{ offer.location }}
+                                                    </p>
+                                                {% endif %}
+                                                <p class="mb-0 card-text small text-muted">
+                                                    <i class="bi bi-calendar me-1"></i>
+                                                    {{ offer.applicationDate|date('d/m/Y') }}
+                                                </p>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/leacielbleu/Documents/CandiMate/src/Controller/KanbanController.php</code></li>
-        <li>Your template at <code>/Users/leacielbleu/Documents/CandiMate/templates/kanban/index.html.twig</code></li>
-    </ul>
+                                                <div class="gap-1 mt-2 d-flex">
+                                                    {% if offer.coverLetters is not empty %}
+                                                        <span class="badge bg-secondary" title="Lettre de motivation">
+                                                            <i class="bi bi-file-text"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                    {% if offer.linkedInMessages is not empty %}
+                                                        <span class="badge bg-primary" title="Message LinkedIn">
+                                                            <i class="bi bi-linkedin"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="p-2 bg-transparent card-footer">
+                                                <div class="btn-group btn-group-sm w-100">
+                                                    <a href="{{ path('app_job_offer_show', {'id': offer.id}) }}" 
+                                                       class="btn btn-outline-primary">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    <a href="{{ path('app_job_offer_edit', {'id': offer.id}) }}" 
+                                                       class="btn btn-outline-secondary">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <button type="button" 
+                                                            class="btn btn-outline-danger" 
+                                                            onclick="confirmDelete('{{ path('app_job_offer_delete', {'id': offer.id}) }}', '{{ offer.title }}')"
+                                                            title="Supprimer">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
+
+{# Modal de confirmation de suppression #}
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer la candidature "<span id="offerTitle"></span>" ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_token" value="">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function confirmDelete(path, title) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    document.getElementById('offerTitle').textContent = title;
+    document.getElementById('deleteForm').action = path;
+    
+    // Générer le token CSRF
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    document.querySelector('#deleteForm input[name="_token"]').value = csrfToken;
+    
+    modal.show();
+}
+</script>
 {% endblock %}
