@@ -1,79 +1,79 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier l'offre{% endblock %}
+{% block title %}Modifier l'offre
+{% endblock %}
 
 {% block body %}
-    <div class="container py-8 mx-auto">
-        <div class="max-w-2xl p-6 mx-auto bg-white rounded-lg shadow-md">
-            <h1 class="mb-6 text-2xl font-bold text-center text-gray-900">Modifier l'offre</h1>
+	<div class="container py-8 mx-auto">
+		<div class="max-w-2xl p-6 mx-auto bg-white rounded-lg shadow-md">
+			<h1 class="mb-6 text-2xl font-bold text-center text-gray-900">Modifier l'offre</h1>
 
-            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
-                <div class="grid grid-cols-1 gap-6">
-                    <div>
-                        {{ form_row(form.title, {
+			{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+			<div class="grid grid-cols-1 gap-6">
+				<div>
+					{{ form_row(form.title, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.company, {
+				<div>
+					{{ form_row(form.company, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.link, {
+				<div>
+					{{ form_row(form.link, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.location, {
+				<div>
+					{{ form_row(form.location, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.salary, {
+				<div>
+					{{ form_row(form.salary, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.contactPerson, {
+				<div>
+					{{ form_row(form.contactPerson, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.contactEmail, {
+				<div>
+					{{ form_row(form.contactEmail, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.applicationDate, {
+				<div>
+					{{ form_row(form.applicationDate, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
+				</div>
 
-                    <div>
-                        {{ form_row(form.status, {
+				<div>
+					{{ form_row(form.status, {
                             'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}
                         }) }}
-                    </div>
-                </div>
+				</div>
+			</div>
 
-                <div class="flex justify-end gap-4 mt-6">
-                    <a href="{{ path('app_job_offer_list') }}" class="px-4 py-2 font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
-                        Annuler
-                    </a>
-                    {{ form_widget(form.save, {
-                        'attr': {'class': 'px-4 py-2 font-medium text-white bg-indigo-600 rounded hover:bg-indigo-700'},
-                        'label': 'Enregistrer les modifications'
-                    }) }}
-                </div>
-            {{ form_end(form) }}
-        </div>
-    </div>
+			<div class="flex justify-end gap-4 mt-6">
+				<a href="{{ path('app_job_offer_list') }}" class="px-4 py-2 font-medium text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
+					Annuler
+				</a>
+				<button type="submit" class="px-4 py-2 font-bold text-white bg-indigo-500 rounded hover:bg-blue-700">
+					{{ button_label|default('Enregistrer') }}
+				</button>
+			</div>
+			{{ form_end(form) }}
+		</div>
+	</div>
 {% endblock %}

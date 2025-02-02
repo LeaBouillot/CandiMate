@@ -82,8 +82,41 @@
                             {% endif %}
                         </p>
                     </div>
+                    {# Remplacer les blocs existants par : #}
 
-                    <div>
+<div>
+    <h3 class="text-sm font-medium text-gray-500">Les lettres de motivation</h3>
+    {% if job_offer.coverLetters is not empty %}
+        {% for letter in job_offer.coverLetters %}
+            <div class="mt-1">
+                <a href="{{ path('app_cover_letter_show', {'id': letter.id}) }}" class="text-blue-600 hover:text-blue-800">
+                    Lettre de motivation #{{ loop.index }}
+                </a>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <a href="{{ path('app_cover_letter_generate', {'id': job_offer.id}) }}" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-plus-circle"></i> Générer une nouvelle lettre
+    </a>
+</div>
+
+<div>
+    <h3 class="text-sm font-medium text-gray-500">Messages LinkedIn</h3>
+    {% if job_offer.linkedInMessages is not empty %}
+        {% for message in job_offer.linkedInMessages %}
+            <div class="mt-1">
+                <a href="{{ path('app_linkedin_show', {'id': message.id}) }}" class="text-blue-600 hover:text-blue-800">
+                    Message LinkedIn #{{ loop.index }}
+                </a>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <a href="{{ path('app_linkedin_generate', {'id': job_offer.id}) }}" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-plus-circle"></i> Générer un nouveau message
+    </a>
+</div>
+
+                    {# <div>
                         <h3 class="text-sm font-medium text-gray-500">Les lettres de motivation</h3>
                         {% if job_offer.coverLetters|length > 0 %}
                             <a href="{{ path('app_cover_letter_list', {'id': job_offer.id}) }}" target="_blank" class="text-blue-600 hover:text-blue-800">
@@ -102,11 +135,11 @@
                                 Voir les Linkedin Messages
                             </a>
                         {% else %}
-                            <a href="{{ path('app_linkedin_show', {'id': job_offer.id}) }}" class="text-gray-600 hover:text-gray-900" title="Générer une lettre de motivation">
+                            <a href="{{ path('app_linkedin_generate', {'id': job_offer.id}) }}" class="text-gray-600 hover:text-gray-900" title="Générer une lettre de motivation">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         {% endif %}
-                    </div>
+                    </div> #}
                 </div>
             </div>
 

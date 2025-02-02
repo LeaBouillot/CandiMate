@@ -10,34 +10,27 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/kanban')]
-// #[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_USER')]
 class KanbanController extends AbstractController
 {
     #[Route('', name: 'app_kanban', methods: ['GET'])]
     public function index(JobOfferRepository $jobOfferRepository): Response
     {
-        $jobOffers = $jobOfferRepository->findBy(
-            ['app_user' => $this->getUser()],
-            ['applicationDate' => 'DESC']
-        );
-
-        // Organiser les offres par statut
-        $columns = [];
-        foreach (JobStatus::cases() as $status) {
-            $columns[$status->value] = [
-                'title' => $status->label(),
-                'offers' => array_filter(
-                    $jobOffers,
-                    fn($offer) => $offer->getStatus() === $status
-                ),
-                // 'badge_class' => $this->getStatusBadgeClass($status),
-                // 'border_class' => $this->getStatusBorderClass($status),
-            ];
-        }
-
-        return $this->render('kanban/index.html.twig', [
-            'columns' => $columns,
-        ]);
+            $jobs = $jobOfferRepository->findBy(['app_user' => $this->getUser()]);
+            $kanbanData = [];
+            
+            foreach ($jobs as $job) {
+                $status = $job->getStatus()->value;
+                if (!isset($kanbanData[$status])) {
+                    $kanbanData[$status] = [];
+                }
+                $kanbanData[$status][] = $job;
+            }
+        
+            return $this->render('kanban/index.html.twig', [
+                'kanban_data' => $kanbanData,
+            ]);
+             
     }
 
     private function getStatusBadgeClass(JobStatus $status): string

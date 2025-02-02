@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Enum\JobStatus;
 
 #[Route('/job-offers')]
-// #[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_USER')]
 class JobOfferController extends AbstractController
 {
     #[Route('', name: 'app_job_offer_list', methods: ['GET'])]

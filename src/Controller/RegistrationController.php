@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\RequestMethod;
 
 class RegistrationController extends AbstractController
 {
@@ -30,8 +29,15 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            // Set the role for the user
+            $user->setRoles(['ROLE_USER']);
+
+            // Persist the user
             $em->persist($user);
             $em->flush();
+
+            // Flash message
+            $this->addFlash('success', 'Registration successful. You can now log in.');
 
             // Redirect to login or home
             return $this->redirectToRoute('app_login');

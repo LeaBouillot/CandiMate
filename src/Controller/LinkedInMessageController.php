@@ -2,105 +2,140 @@
 
 namespace App\Controller;
 
-use App\Entity\JobOffer;
 use App\Entity\LinkedInMessage;
+use App\Entity\JobOffer;
+use App\Repository\JobOfferRepository;
 use App\Repository\LinkedInMessageRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Gemini;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/linkedin-message')]
 #[IsGranted('ROLE_USER')]
 class LinkedInMessageController extends AbstractController
 {
-    #[Route('/generate', name: 'app_linkedin_message_generate', methods: ['POST'])]
-    public function generate(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    {
+    #[Route('/generate/{id}', name: 'app_linkedin_generate', methods: ['GET'])]
+    public function generate(
+        JobOffer $jobOffer,
+        EntityManagerInterface $em
+    ): Response {
+        // Vérifier que l'utilisateur est propriétaire de l'offre
+        if ($jobOffer->getAppUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à générer un message pour cette offre.');
+            return $this->redirectToRoute('app_home');
+        }
+
         try {
-            $data = json_decode($request->getContent(), true);
-            
-            if (!isset($data['jobOfferId'])) {
-                return $this->json([
-                    'error' => 'Job offer ID is required'
-                ], Response::HTTP_BAD_REQUEST);
-            }
+            $user = $this->getUser();
+            $prompt = "Génère un message LinkedIn court et accrocheur (maximum 200 mots) pour postuler au poste de {$jobOffer->getTitle()} chez {$jobOffer->getCompany()}. " .
+                "Le message doit commencer par 'Bonjour Mme. Mr. " . ($jobOffer->getContactPerson() ?: "Madame, Monsieur") . ",' et doit :" .
+                "- Être professionnel et direct" .
+                "- Inclure une accroche percutante" .
+                "- Mentionner 2-3 points clés sur ma valeur ajoutée" .
+                "- Se terminer par une invitation à échanger" .
+                "Signature : {$user->getFirstName()} {$user->getLastName()}" .
+                "Ajoute <br> pour chaque saut de ligne.";
+            // Générer le contenu via Gemini API
+            $yourApiKey = $this->getParameter('GEMINI_API_KEY');
+            $client = Gemini::client($yourApiKey);
+            $result = $client->geminiPro()->generateContent($prompt);
 
-            $jobOffer = $entityManager->getRepository(JobOffer::class)->find($data['jobOfferId']);
-            
-            if (!$jobOffer) {
-                return $this->json([
-                    'error' => 'Job offer not found'
-                ], Response::HTTP_NOT_FOUND);
-            }
-
-            // Vérifier que l'utilisateur est propriétaire de l'offre
-            if ($jobOffer->getAppUser() !== $this->getUser()) {
-                return $this->json([
-                    'error' => 'Access denied'
-                ], Response::HTTP_FORBIDDEN);
-            }
-
-            // Générer le contenu du message LinkedIn
-            $messageContent = $this->generateMessageContent($jobOffer);
-
-            // Créer et sauvegarder le message
             $linkedInMessage = new LinkedInMessage();
-            $linkedInMessage->setContent($messageContent);
-            $linkedInMessage->setJobOffer($jobOffer);
-            $linkedInMessage->setAppUser($this->getUser());
+            $linkedInMessage
+                ->setContent($result->text())
+                ->setJobOffer($jobOffer)
+                ->setAppUser($user);
 
-            $entityManager->persist($linkedInMessage);
-            $entityManager->flush();
+            $em->persist($linkedInMessage);
+            $em->flush();
 
-            return $this->json([
-                'id' => $linkedInMessage->getId(),
-                'content' => $linkedInMessage->getContent(),
-                'createdAt' => $linkedInMessage->getCreatedAt()->format('Y-m-d H:i:s')
-            ], Response::HTTP_CREATED);
-
+            $this->addFlash('success', 'Message LinkedIn généré avec succès.');
+            return $this->redirectToRoute('app_linkedin_show', ['id' => $linkedInMessage->getId()]);
         } catch (\Exception $e) {
-            return $this->json([
-                'error' => 'An error occurred while generating the message'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            $this->addFlash('error', 'Une erreur est survenue lors de la génération du message.');
+            return $this->redirectToRoute('app_job_offer_show', ['id' => $jobOffer->getId()]);
         }
     }
 
-    #[Route('/{id}', name: 'app_linkedin_message_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_linkedin_show', methods: ['GET'])]
     public function show(LinkedInMessage $linkedInMessage): Response
     {
-        // Vérifier que l'utilisateur est propriétaire du message
         if ($linkedInMessage->getAppUser() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('You can only view your own LinkedIn messages.');
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à voir ce message.');
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('linkedin_message/show.html.twig', [
-            'linkedin_message' => $linkedInMessage
+            'linkedInMessage' => $linkedInMessage,
+            'jobOfferName' => $linkedInMessage->getJobOffer()->getTitle(),
+            'LMContent' => $linkedInMessage->getContent(),
+            'jobOffer' => $linkedInMessage->getJobOffer()
         ]);
     }
 
-    private function generateMessageContent(JobOffer $jobOffer): string
-    {
-        $contactPerson = $jobOffer->getContactPerson() ?: 'Madame, Monsieur';
-        
-        $template = <<<EOT
-Bonjour {$contactPerson},
+    #[Route('/{id}/delete', name: 'app_linkedin_delete', methods: ['POST'])]
+    public function delete(
+        LinkedInMessage $linkedInMessage,
+        EntityManagerInterface $em,
+        Request $request
+    ): Response {
+        if ($linkedInMessage->getAppUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à supprimer ce message.');
+            return $this->redirectToRoute('app_home');
+        }
 
-Je vous contacte au sujet du poste de {$jobOffer->getTitle()} chez {$jobOffer->getCompany()}.
+        try {
+            $em->remove($linkedInMessage);
+            $em->flush();
 
-Mon profil correspond parfaitement aux compétences recherchées pour ce poste. Je suis particulièrement intéressé(e) par cette opportunité car elle correspond à mes objectifs professionnels.
+            $this->addFlash('success', 'Message LinkedIn supprimé avec succès.');
+            return $this->redirectToRoute('app_job_offer_show', [
+                'id' => $linkedInMessage->getJobOffer()->getId()
+            ]);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue lors de la suppression.');
+            return $this->redirectToRoute('app_linkedin_show', ['id' => $linkedInMessage->getId()]);
+        }
+    }
+    #[Route('/{id}/update', name: 'app_linkedin_update', methods: ['POST'])]
+    public function update(
+        Request $request,
+        LinkedInMessage $linkedInMessage,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        // Vérifier que l'utilisateur est propriétaire du message
+        if ($linkedInMessage->getAppUser() !== $this->getUser()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Vous n\'êtes pas autorisé à modifier ce message.'
+            ], Response::HTTP_FORBIDDEN);
+        }
 
-J'aimerais pouvoir échanger avec vous pour discuter plus en détail de ma candidature et de ma potentielle contribution à votre équipe.
+        try {
+            $data = json_decode($request->getContent(), true);
+            
+            if (!isset($data['content'])) {
+                throw new \InvalidArgumentException('Le contenu est requis');
+            }
 
-Merci d'avance pour votre retour.
+            $linkedInMessage->setContent($data['content']);
+            $em->flush();
 
-Cordialement,
-{$this->getUser()->getFirstName()} {$this->getUser()->getLastName()}
-EOT;
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Message mis à jour avec succès'
+            ]);
 
-        return $template;
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la mise à jour'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
