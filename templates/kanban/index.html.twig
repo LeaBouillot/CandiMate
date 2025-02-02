@@ -1,167 +1,142 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Kanban des candidatures{% endblock %}
-
-{% block stylesheets %}
-<style>
-    .kanban-container {
-        overflow-x: auto;
-        min-height: calc(100vh - 200px);
-    }
-    .kanban-column {
-        min-width: 300px;
-        max-width: 300px;
-    }
-    .kanban-card {
-        transition: all 0.3s ease;
-    }
-    .kanban-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .card-count {
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-    }
-</style>
-{% endblock %}
+{% block title %}Kanban Dashboard{% endblock %}
 
 {% block body %}
-<div class="py-4 container-fluid">
-    <div class="mb-4 d-flex justify-content-between align-items-center">
-        <h1 class="mb-0 h3">Kanban des candidatures</h1>
-        <a href="{{ path('app_job_offer_new') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-2"></i>Nouvelle candidature
-        </a>
-    </div>
+    <div class="flex flex-col items-center min-h-screen p-4 bg-gray-100 md:p-8">
+        <h1 class="mb-8 text-2xl font-bold text-gray-800 md:text-3xl">Job Application Status</h1>
 
-    <div class="kanban-container">
-        <div class="gap-4 d-flex">
-            {% for status, column in columns %}
-                <div class="kanban-column">
-                    <div class="card h-100">
-                        {# <div class="card-header {{ column.border_class }} border-3 border-bottom"> #}
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">{{ column.title }}</h5>
-                                {# <span class="card-count {{ column.badge_class }}">
-                                    {{ column.offers|length }}
-                                </span> #}
+        <!-- Kanban Board -->
+        <div class="flex flex-col w-full gap-4 overflow-x-auto md:flex-row">
+            {# Apply Column #}
+            <div class="flex flex-col w-full md:w-1/5 min-w-[250px] p-4 bg-white rounded-lg shadow-lg mb-4 md:mb-0">
+                <h2 class="pb-2 mb-4 text-lg font-semibold text-gray-700 border-b-2">Apply</h2>
+                <div class="flex-1 space-y-4">
+                    {% if kanban_data['A postuler'] is defined %}
+                        {% for job in kanban_data['A postuler'] %}
+                            <div class="p-3 transition-colors bg-blue-100 rounded-lg shadow hover:bg-blue-200">
+                                <h3 class="text-sm font-semibold truncate">{{ job.title }}</h3>
+                                <p class="text-xs text-gray-600 truncate">{{ job.company }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <a href="{{ path('app_job_offer_show', { id: job.id }) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs text-blue-600 transition-colors hover:text-blue-800">
+                                       Voir détails
+                                       <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                       </svg>
+                                    </a>
+                                </div>
                             </div>
-                        {# </div> #}
-                        <div class="p-2 card-body">
-                            <div class="gap-2 d-flex flex-column">
-                                {% if column.offers is empty %}
-                                    <div class="p-3 text-center text-muted">
-                                        <i class="mb-2 bi bi-inbox fs-2 d-block"></i>
-                                        Aucune candidature
-                                    </div>
-                                {% else %}
-                                    {% for offer in column.offers %}
-                                        <div class="card kanban-card">
-                                            <div class="card-body">
-                                                <h6 class="mb-1 card-title text-truncate">
-                                                    <a href="{{ path('app_job_offer_show', {'id': offer.id}) }}" 
-                                                       class="text-decoration-none">
-                                                        {{ offer.title }}
-                                                    </a>
-                                                </h6>
-                                                <p class="mb-2 card-text small text-muted">
-                                                    <i class="bi bi-building me-1"></i>
-                                                    {{ offer.company }}
-                                                </p>
-                                                {% if offer.location %}
-                                                    <p class="mb-2 card-text small">
-                                                        <i class="bi bi-geo-alt me-1"></i>
-                                                        {{ offer.location }}
-                                                    </p>
-                                                {% endif %}
-                                                <p class="mb-0 card-text small text-muted">
-                                                    <i class="bi bi-calendar me-1"></i>
-                                                    {{ offer.applicationDate|date('d/m/Y') }}
-                                                </p>
-
-                                                <div class="gap-1 mt-2 d-flex">
-                                                    {% if offer.coverLetters is not empty %}
-                                                        <span class="badge bg-secondary" title="Lettre de motivation">
-                                                            <i class="bi bi-file-text"></i>
-                                                        </span>
-                                                    {% endif %}
-                                                    {% if offer.linkedInMessages is not empty %}
-                                                        <span class="badge bg-primary" title="Message LinkedIn">
-                                                            <i class="bi bi-linkedin"></i>
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="p-2 bg-transparent card-footer">
-                                                <div class="btn-group btn-group-sm w-100">
-                                                    <a href="{{ path('app_job_offer_show', {'id': offer.id}) }}" 
-                                                       class="btn btn-outline-primary">
-                                                        <i class="bi bi-eye"></i>
-                                                    </a>
-                                                    <a href="{{ path('app_job_offer_edit', {'id': offer.id}) }}" 
-                                                       class="btn btn-outline-secondary">
-                                                        <i class="bi bi-pencil"></i>
-                                                    </a>
-                                                    <button type="button" 
-                                                            class="btn btn-outline-danger" 
-                                                            onclick="confirmDelete('{{ path('app_job_offer_delete', {'id': offer.id}) }}', '{{ offer.title }}')"
-                                                            title="Supprimer">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                        {% else %}
+                            <p class="py-4 text-xs text-center text-gray-500">Aucune offre dans cette catégorie.</p>
+                        {% endfor %}
+                    {% endif %}
                 </div>
-            {% endfor %}
+            </div>
+
+            {# On Hold Column #}
+            <div class="flex flex-col w-full md:w-1/5 min-w-[250px] p-4 bg-white rounded-lg shadow-lg mb-4 md:mb-0">
+                <h2 class="pb-2 mb-4 text-lg font-semibold text-gray-700 border-b-2">On Hold</h2>
+                <div class="flex-1 space-y-4">
+                    {% if kanban_data['En attente'] is defined %}
+                        {% for job in kanban_data['En attente'] %}
+                            <div class="p-3 transition-colors bg-yellow-100 rounded-lg shadow hover:bg-yellow-200">
+                                <h3 class="text-sm font-semibold truncate">{{ job.title }}</h3>
+                                <p class="text-xs text-gray-600 truncate">{{ job.company }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <a href="{{ path('app_job_offer_show', { id: job.id }) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs text-yellow-600 transition-colors hover:text-yellow-800">
+                                       Voir détails
+                                       <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                       </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="py-4 text-xs text-center text-gray-500">Aucune offre dans cette catégorie.</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Interview Column #}
+            <div class="flex flex-col w-full md:w-1/5 min-w-[250px] p-4 bg-white rounded-lg shadow-lg mb-4 md:mb-0">
+                <h2 class="pb-2 mb-4 text-lg font-semibold text-gray-700 border-b-2">Interview</h2>
+                <div class="flex-1 space-y-4">
+                    {% if kanban_data['Entretien'] is defined %}
+                        {% for job in kanban_data['Entretien'] %}
+                            <div class="p-3 transition-colors bg-orange-100 rounded-lg shadow hover:bg-orange-200">
+                                <h3 class="text-sm font-semibold truncate">{{ job.title }}</h3>
+                                <p class="text-xs text-gray-600 truncate">{{ job.company }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <a href="{{ path('app_job_offer_show', { id: job.id }) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs text-orange-600 transition-colors hover:text-orange-800">
+                                       Voir détails
+                                       <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                       </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="py-4 text-xs text-center text-gray-500">Aucune offre dans cette catégorie.</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Accepted Column #}
+            <div class="flex flex-col w-full md:w-1/5 min-w-[250px] p-4 bg-white rounded-lg shadow-lg mb-4 md:mb-0">
+                <h2 class="pb-2 mb-4 text-lg font-semibold text-gray-700 border-b-2">Accepted</h2>
+                <div class="flex-1 space-y-4">
+                    {% if kanban_data['Accepté'] is defined %}
+                        {% for job in kanban_data['Accepté'] %}
+                            <div class="p-3 transition-colors bg-green-100 rounded-lg shadow hover:bg-green-200">
+                                <h3 class="text-sm font-semibold truncate">{{ job.title }}</h3>
+                                <p class="text-xs text-gray-600 truncate">{{ job.company }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <a href="{{ path('app_job_offer_show', { id: job.id }) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs text-green-600 transition-colors hover:text-green-800">
+                                       Voir détails
+                                       <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                       </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="py-4 text-xs text-center text-gray-500">Aucune offre dans cette catégorie.</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Rejected Column #}
+            <div class="flex flex-col w-full md:w-1/5 min-w-[250px] p-4 bg-white rounded-lg shadow-lg mb-4 md:mb-0">
+                <h2 class="pb-2 mb-4 text-lg font-semibold text-gray-700 border-b-2">Rejected</h2>
+                <div class="flex-1 space-y-4">
+                    {% if kanban_data['Refusé'] is defined %}
+                        {% for job in kanban_data['Refusé'] %}
+                            <div class="p-3 transition-colors bg-red-100 rounded-lg shadow hover:bg-red-200">
+                                <h3 class="text-sm font-semibold truncate">{{ job.title }}</h3>
+                                <p class="text-xs text-gray-600 truncate">{{ job.company }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <a href="{{ path('app_job_offer_show', { id: job.id }) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs text-red-600 transition-colors hover:text-red-800">
+                                       Voir détails
+                                       <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                       </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="py-4 text-xs text-center text-gray-500">Aucune offre dans cette catégorie.</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
-{# Modal de confirmation de suppression #}
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmer la suppression</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer la candidature "<span id="offerTitle"></span>" ?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <form id="deleteForm" method="post" style="display: inline;">
-                    <input type="hidden" name="_token" value="">
-                    <button type="submit" class="btn btn-danger">Supprimer</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block javascripts %}
-<script>
-function confirmDelete(path, title) {
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    document.getElementById('offerTitle').textContent = title;
-    document.getElementById('deleteForm').action = path;
-    
-    // Générer le token CSRF
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    document.querySelector('#deleteForm input[name="_token"]').value = csrfToken;
-    
-    modal.show();
-}
-</script>
 {% endblock %}

@@ -4,16 +4,41 @@ import './bootstrap.js';
 import './styles/app.css';
 
 // Script pour le menu mobile
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuButton && mobileMenu) {
+        // Gestionnaire pour le bouton du menu
+        mobileMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileMenu.classList.toggle('hidden');
+        });
 
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden'); // Ajoute/retire la classe hidden
+        // Fermer le menu si on clique en dehors
+        document.addEventListener('click', function(e) {
+            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+
+        // Empêcher la fermeture lors du clic sur le menu lui-même
+        mobileMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
     }
 });
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     const mobileMenuButton = document.getElementById('mobile-menu-button');
+//     const mobileMenu = document.getElementById('mobile-menu');
+
+//     if (mobileMenuButton) {
+//         mobileMenuButton.addEventListener('click', () => {
+//             mobileMenu.classList.toggle('hidden'); // Ajoute/retire la classe hidden
+//         });
+//     }
+// });
 
 /*
  * Welcome to your app's main JavaScript file!

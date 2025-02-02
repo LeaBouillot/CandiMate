@@ -1,165 +1,205 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Lettre de motivation - {{ cover_letter.jobOffer.title }}{% endblock %}
+{% block title %}{{ jobOfferName }} - Lettre de motivation{% endblock %}
 
-{% block body %}
-<div class="container my-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ path('app_job_offer_list') }}">Offres d'emploi</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{{ path('app_job_offer_show', {'id': cover_letter.jobOffer.id}) }}">
-                    {{ cover_letter.jobOffer.title }}
-                </a>
-            </li>
-            <li class="breadcrumb-item active">Lettre de motivation</li>
-        </ol>
-    </nav>
-
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="mb-0 h3">Lettre de motivation</h1>
-                <div>
-                    <small class="text-muted">
-                        Générée le {{ cover_letter.createdAt|date('d/m/Y H:i') }}
-                    </small>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="mb-4">
-                <h5 class="mb-3 card-title">Informations de l'offre</h5>
-                <dl class="mb-0 row">
-                    <dt class="col-sm-3">Poste</dt>
-                    <dd class="col-sm-9">{{ cover_letter.jobOffer.title }}</dd>
-
-                    <dt class="col-sm-3">Entreprise</dt>
-                    <dd class="col-sm-9">{{ cover_letter.jobOffer.company }}</dd>
-
-                    {% if cover_letter.jobOffer.location %}
-                        <dt class="col-sm-3">Localisation</dt>
-                        <dd class="col-sm-9">{{ cover_letter.jobOffer.location }}</dd>
-                    {% endif %}
-                </dl>
-            </div>
-
-            <div class="mb-4">
-                <h5 class="mb-3 card-title">Contenu de la lettre</h5>
-                <div class="p-4 rounded bg-light">
-                    {{ cover_letter.content|raw }}
-                </div>
-            </div>
-
-            <div class="gap-2 d-flex">
-                <button class="btn btn-primary" onclick="copyLetter()">
-                    <i class="bi bi-clipboard me-2"></i>Copier la lettre
-                </button>
-                <button class="btn btn-secondary" onclick="printLetter()">
-                    <i class="bi bi-printer me-2"></i>Imprimer
-                </button>
-                <a href="{{ path('app_job_offer_show', {'id': cover_letter.jobOffer.id}) }}" 
-                   class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Retour à l'offre
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-{# Template d'impression #}
-<div id="printTemplate" style="display: none;">
-    <div style="max-width: 800px; margin: 20px auto; font-family: Arial, sans-serif;">
-        <div style="margin-bottom: 30px;">
-            <h2 style="margin-bottom: 5px;">{{ cover_letter.jobOffer.title }}</h2>
-            <p style="color: #666;">{{ cover_letter.jobOffer.company }}</p>
-            {% if cover_letter.jobOffer.location %}
-                <p style="color: #666;">{{ cover_letter.jobOffer.location }}</p>
-            {% endif %}
-        </div>
-        <div>
-            {{ cover_letter.content|raw }}
-        </div>
-        <div style="margin-top: 30px; font-size: 12px; color: #666;">
-            Généré le {{ cover_letter.createdAt|date('d/m/Y') }}
-        </div>
-    </div>
-</div>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-content {
+                padding: 2cm;
+            }
+        }
+        .letter-content {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+        }
+    </style>
 {% endblock %}
 
-{% block javascripts %}
-<script>
-function copyLetter() {
-    const content = document.querySelector('.bg-light').innerText;
-    navigator.clipboard.writeText(content)
-        .then(() => {
-            // Afficher une notification plus élégante dans le style macOS
+{% block body %}
+    {# Barre de navigation secondaire #}
+    <nav class="bg-gray-100 shadow-md no-print">
+        <div class="container px-4 py-3 mx-auto">
+            <div class="flex items-center justify-between">
+                <div class="text-gray-600">
+                    <a href="{{ path('app_dashboard') }}" class="hover:text-gray-900">Dashboard</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-gray-900">Lettre de motivation</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500">
+                        Dernière modification: {{ "now"|date("d/m/Y H:i") }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container px-4 py-8 mx-auto">
+        {# Messages Flash #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if label == 'success' %}bg-green-100 text-green-700 border border-green-400{% else %}bg-red-100 text-red-700 border border-red-400{% endif %} fade-out">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# En-tête et informations sur l'offre #}
+        <div class="p-6 mb-6 bg-white rounded-lg shadow-lg no-print">
+            <div class="flex items-start justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">{{ jobOfferName }}</h1>
+                    <p class="mt-2 text-gray-600">Lettre de motivation</p>
+                </div>
+                <div class="flex space-x-2">
+                    <span class="px-3 py-1 text-sm text-blue-800 bg-blue-100 rounded-full">
+                        {{ jobOffer.company ?? 'Entreprise' }}
+                    </span>
+                    <span class="px-3 py-1 text-sm text-green-800 bg-green-100 rounded-full">
+                        {{ jobOffer.location ?? 'Localisation' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {# Contenu de la lettre #}
+        <div class="mb-6 bg-white rounded-lg shadow-lg print-content">
+            {# Barre d'outils #}
+            <div class="flex items-center justify-between p-4 border-b bg-gray-50 no-print">
+                <h2 class="text-xl font-semibold text-gray-700">Contenu de la lettre</h2>
+                <div class="flex space-x-2">
+                    <button onclick="toggleEditMode()" 
+                            class="px-3 py-1 text-white transition-colors bg-blue-600 rounded hover:bg-blue-700">
+                        <i class="mr-1 fas fa-edit"></i> Mode édition
+                    </button>
+                    <button onclick="copyToClipboard()" 
+                            class="px-3 py-1 text-white transition-colors bg-gray-600 rounded hover:bg-gray-700">
+                        <i class="mr-1 fas fa-copy"></i> Copier
+                    </button>
+                    <button onclick="window.print()" 
+                            class="px-3 py-1 text-white transition-colors bg-green-600 rounded hover:bg-green-700">
+                        <i class="mr-1 fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+
+            {# Zone de contenu éditable #}
+            <div class="p-8 letter-content" id="letterContent">
+                {{ CLContent|raw }}
+            </div>
+        </div>
+
+        {# Actions principales #}
+        <div class="flex items-center justify-between mt-6 no-print">
+            <div class="flex space-x-4">
+                <a href="{{ path('app_dashboard') }}" 
+                   class="px-4 py-2 text-white transition-colors bg-gray-600 rounded hover:bg-gray-700">
+                    <i class="mr-2 fas fa-arrow-left"></i> Retour
+                </a>
+                <button onclick="saveLetter()" 
+                        class="hidden px-4 py-2 text-white transition-colors bg-blue-600 rounded hover:bg-blue-700" 
+                        id="saveButton">
+                    <i class="mr-2 fas fa-save"></i> Enregistrer
+                </button>
+            </div>
+            
+            <form action="{{ path('app_cover_letter_delete', {'id': app.request.get('id')}) }}" 
+                  method="post" 
+                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette lettre de motivation ?');" 
+                  class="inline">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                <button type="submit" 
+                        class="px-4 py-2 text-white transition-colors bg-red-600 rounded hover:bg-red-700">
+                    <i class="mr-2 fas fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {# Scripts #}
+    <script>
+        // Copier dans le presse-papiers
+        function copyToClipboard() {
+            const content = document.querySelector('.letter-content').innerText;
+            navigator.clipboard.writeText(content)
+                .then(() => {
+                    showNotification('Lettre copiée dans le presse-papiers !', 'success');
+                })
+                .catch(() => {
+                    showNotification('Erreur lors de la copie', 'error');
+                });
+        }
+
+        // Mode édition
+        function toggleEditMode() {
+            const content = document.getElementById('letterContent');
+            const saveButton = document.getElementById('saveButton');
+            
+            if (content.contentEditable === 'true') {
+                content.contentEditable = 'false';
+                content.classList.remove('border', 'border-blue-300', 'focus:outline-none');
+                saveButton.classList.add('hidden');
+            } else {
+                content.contentEditable = 'true';
+                content.classList.add('border', 'border-blue-300', 'focus:outline-none');
+                saveButton.classList.remove('hidden');
+            }
+        }
+
+        // Sauvegarder les modifications
+        function saveLetter() {
+            const content = document.getElementById('letterContent').innerHTML;
+            
+            fetch('{{ path('app_cover_letter_update', {'id': app.request.get('id')}) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token('update') }}'
+                },
+                body: JSON.stringify({ content: content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Lettre enregistrée avec succès!', 'success');
+                    toggleEditMode();
+                } else {
+                    showNotification('Erreur lors de l\'enregistrement', 'error');
+                }
+            })
+            .catch(() => {
+                showNotification('Erreur lors de l\'enregistrement', 'error');
+            });
+        }
+
+        // Système de notification
+        function showNotification(message, type) {
             const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                padding: 10px 20px;
-                border-radius: 20px;
-                font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                z-index: 9999;
-                animation: fadeInOut 2s ease-in-out;
-            `;
-            notification.textContent = 'Copié dans le presse-papiers';
+            notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white`;
+            notification.textContent = message;
             document.body.appendChild(notification);
             
             setTimeout(() => {
                 notification.remove();
-            }, 2000);
-        })
-        .catch(err => {
-            // Gestion des erreurs de permission sur macOS
-            if (err.name === 'NotAllowedError') {
-                alert('Veuillez autoriser l\'accès au presse-papiers dans les préférences de votre navigateur.');
-            }
-        });
-}
-
-function printLetter() {
-    // Sauvegarder les styles actuels
-    const originalContent = document.body.innerHTML;
-    const printContent = document.getElementById('printTemplate').innerHTML;
-
-    // Appliquer le contenu d'impression
-    document.body.innerHTML = printContent;
-
-    // Configurer la page pour l'impression
-    const style = document.createElement('style');
-    style.textContent = `
-        @media print {
-            @page {
-                margin: 2cm;
-                size: A4;
-            }
-            body {
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                line-height: 1.6;
-                color: #000;
-            }
-            /* Styles spécifiques pour Mac */
-            @supports (-webkit-hyphens: none) {
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                }
-            }
+            }, 3000);
         }
-    `;
-    document.head.appendChild(style);
 
-    // Imprimer
-    window.print();
-
-    // Restaurer le contenu original
-    document.body.innerHTML = originalContent;
-</script>
+        // Faire disparaître les messages flash après 5 secondes
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.fade-out').forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transition = 'opacity 0.5s';
+                    setTimeout(() => el.remove(), 500);
+                });
+            }, 5000);
+        });
+    </script>
 {% endblock %}

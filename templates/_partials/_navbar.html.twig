@@ -1,114 +1,122 @@
+{# Navbar template #}
 <nav class="text-white bg-gray-800">
-  <div class="container flex items-center justify-between px-6 py-4 mx-auto">
-    <!-- Logo -->
-    <a href="{{ path('app_home') }}" class="flex items-center">
-      <img
-        src="{{ asset('assets/images/logo_candi.png') }}"
-        alt="Logo Candimate"
-        class="w-auto h-10 mr-2"
-      />
-      <span class="text-lg font-bold">Candimate</span>
-    </a>
-
-    <!-- Menu -->
-    <ul class="hidden space-x-8 md:flex">
-      <li><a href="/" class="hover:text-blue-400">Home</a></li>
-      <li><a href="/job-offers" class="hover:text-blue-400">Job Offer</a></li>
-      <li><a href="/dashboard" class="hover:text-blue-400">Dashboard</a></li>
-      <li><a href="/kanban" class="hover:text-blue-400">Kanban</a></li>
-      <li>
-        <a href="/cover-letter" class="hover:text-blue-400">Cover Letter</a>
-      </li>
-      <li><a href="/login" class="hover:text-blue-400">Connexion</a></li>
-      <!-- Icône de recherche -->
-      <li>
-        <a href="#" class="flex items-center hover:text-blue-400">
-          <svg
-            class="w-6 h-6"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14zm10 10l-4.35-4.35"
-            />
-          </svg>
+    <div class="container flex items-center justify-between px-6 py-4 mx-auto">
+        <!-- Logo -->
+        <a href="{{ path('app_home') }}" class="flex items-center">
+            <img src="{{ asset('assets/images/logo_candi.png') }}" alt="Logo Candimate" class="w-auto h-10 mr-2" />
+            <span class="text-lg font-bold">Candimate</span>
         </a>
-      </li>
-    </ul>
 
-    <!-- Mobile Menu Button -->
-    <button
-      id="mobile-menu-button"
-      class="text-gray-300 md:hidden hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <svg
-        class="w-6 h-6"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M4 6h16M4 12h16m-7 6h7"
-        />
-      </svg>
-    </button>
-  </div>
+        <!-- Desktop Menu -->
+        <ul class="items-center hidden space-x-8 md:flex">
+            <li><a href="/" class="hover:text-blue-400">Home</a></li>
+            <li><a href="/job-offers" class="hover:text-blue-400">Job Offer</a></li>
+            <li><a href="/dashboard" class="hover:text-blue-400">Dashboard</a></li>
+            <li><a href="/kanban" class="hover:text-blue-400">Kanban</a></li>
+            <li><a href="/job-offers/new" class="hover:text-blue-400">New job</a></li>
 
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="hidden bg-gray-700 md:hidden">
-    <ul class="p-4 space-y-2">
-      <li><a href="/" class="block text-white hover:text-blue-400">Home</a></li>
-      <li>
-        <a href="/job-offers" class="block text-white hover:text-blue-400"
-          >Job Offer</a
-        >
-      </li>
-      <li>
-        <a href="/kanban" class="block text-white hover:text-blue-400"
-          >Kanban</a
-        >
-      </li>
-      <li>
-        <a href="/cover-letter" class="block text-white hover:text-blue-400"
-          >Cover Letter</a
-        >
-      </li>
-      <li>
-        <a href="/login" class="block text-white hover:text-blue-400"
-          >Connexion</a
-        >
-      </li>
-      <!-- Icône de recherche -->
-      <li>
-        <a
-          href="#"
-          class="flex items-center block text-white hover:text-blue-400"
-        >
-          <svg
-            class="w-6 h-6"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11 4a7 7 0 1 1 0 14a7 7 0 0 1 0-14zm10 10l-4.35-4.35"
-            />
-          </svg>
-        </a>
-      </li>
-    </ul>
-  </div>
+            <!-- User Menu -->
+            {% if app.user %}
+                <li class="relative group">
+                    <button class="flex items-center focus:outline-none">
+                        <div class="flex items-center justify-center w-10 h-10 font-semibold text-white bg-blue-500 rounded-full">
+                            {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                        </div>
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 hidden w-48 py-2 mt-2 bg-white rounded-md shadow-xl group-hover:block">
+                        <div class="px-4 py-2 text-sm text-gray-700">
+                            <div class="font-medium">{{ app.user.firstName }} {{ app.user.lastName }}</div>
+                            <div class="text-sm text-gray-500">{{ app.user.email }}</div>
+                        </div>
+                        <div class="border-t border-gray-100"></div>
+                        <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+                        <div class="border-t border-gray-100"></div>
+                        <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                            Logout
+                        </a>
+                    </div>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('app_login') }}" class="px-4 py-2 transition-colors bg-blue-500 rounded-md hover:bg-blue-600">
+                        Login
+                    </a>
+                </li>
+            {% endif %}
+            
+        </ul>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" 
+                class="text-gray-300 md:hidden hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden bg-gray-700 md:hidden">
+        <ul class="flex flex-col p-4 space-y-3">
+            <li>
+                <a href="{{ path('app_home') }}" 
+                   class="block w-full px-4 py-2 text-white transition-colors rounded hover:bg-gray-600">
+                    Home
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_job_offer_list') }}" 
+                   class="block w-full px-4 py-2 text-white transition-colors rounded hover:bg-gray-600">
+                    Job Offer
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_dashboard') }}" 
+                   class="block w-full px-4 py-2 text-white transition-colors rounded hover:bg-gray-600">
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_kanban') }}" 
+                   class="block w-full px-4 py-2 text-white transition-colors rounded hover:bg-gray-600">
+                    Kanban
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_job_offer_new') }}" 
+                   class="block w-full px-4 py-2 text-white transition-colors rounded hover:bg-gray-600">
+                    New job
+                </a>
+            </li>
+
+            {% if app.user %}
+                <li class="px-4 py-2">
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center justify-center w-8 h-8 font-semibold text-white bg-blue-500 rounded-full">
+                            {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                        </div>
+                        <span class="text-white">{{ app.user.firstName }} {{ app.user.lastName }}</span>
+                    </div>
+                </li>
+                <li>
+                    <a href="{{ path('app_logout') }}" 
+                       class="block w-full px-4 py-2 text-red-400 transition-colors rounded hover:bg-gray-600">
+                        Logout
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('app_login') }}" 
+                       class="block w-full px-4 py-2 text-white transition-colors rounded hover:bg-gray-600">
+                        Login
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>
