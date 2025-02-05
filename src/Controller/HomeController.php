@@ -18,9 +18,15 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/mentions-legales', name: 'app_mentions')]
-    public function mentions(): Response
+    #[Route('/legal_notice', name: 'app_legal_notice')]
+    public function legal(): Response
     {
-        return $this->render('home/mentions.html.twig', []);
+        return $this->render('home/legal_notice.html.twig', []);
+    }
+
+    #[Route('/policy', name: 'app_policy')]
+    public function policy(): Response
+    {
+        return $this->render('home/policy.html.twig', []);
     }
 }
