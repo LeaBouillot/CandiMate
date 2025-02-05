@@ -1,53 +1,48 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}Candimate - Accueil{% endblock %}
-
+{% block title %}Candimate - Accueil
+{% endblock %}
 {% block body %}
-<div class="container px-4 py-16 mx-auto">
-    {% if app.user %}
-        <h1 class="mt-10 text-6xl text-center text-orange-400">Bon retour sur Candimate, {{ app.user.firstName|capitalize }}</h1>
-        <div class="w-3/6 h-1 m-auto my-8 bg-orange-400"></div>
-        <p class="w-2/3 mx-auto text-2xl font-medium text-center">
-            Vous pouvez facilement gérer vos candidatures, générer automatiquement vos lettres de motivation personnalisées 
-            et préparer vos messages LinkedIn en un clin d'œil.
-            <br><br>
-            Simplifiez votre recherche d’emploi et mettez toutes les chances de votre côté pour décrocher le poste de vos rêves !
-        </p>
-    {% else %}
-        <h1 class="mt-10 text-6xl text-center text-orange-400">Bienvenue sur Candimate</h1>
-        <div class="w-3/6 h-1 m-auto my-8 bg-orange-400"></div>
-        <p class="w-2/3 mx-auto text-2xl font-medium text-center">
-            Votre assistant personnel pour simplifier la gestion de vos candidatures !
-            <br>Générez automatiquement des lettres de motivation sur-mesure et des messages LinkedIn professionnels en quelques clics.
-            <br>Optimisez votre recherche d'emploi et laissez-nous vous accompagner vers le succès !
-        </p>
-    {% endif %}
+	<div class="flex items-center min-h-screen">
+		<div class="container px-4 mx-auto">
+			<div
+				class="grid gap-8 lg:grid-cols-2">
+				{# Left Content #}
+				<div class="flex flex-col justify-center order-2 px-4 lg:order-1 lg:px-8">
+					{% if app.user %}
+						<h1 class="mb-6 text-2xl font-bold text-orange-400 lg:text-4xl">Bon retour sur Candimate,
+							{{ app.user.firstName|capitalize }}</h1>
+						<p class="mb-8 text-base lg:text-lg">
+							Vous pouvez facilement gérer vos candidatures, générer automatiquement vos lettres de motivation personnalisées
+														                       et préparer vos messages LinkedIn en un clin d'œil.
+							<br><br>
+							Simplifiez votre recherche d'emploi et mettez toutes les chances de votre côté pour décrocher le poste de vos rêves !
+						</p>
+						<a href="{{ path('app_dashboard') }}" class="inline-block px-6 py-3 text-center text-white bg-orange-400 rounded-lg hover:bg-orange-500 w-fit">
+							Accéder à mon tableau de bord
+						</a>
+					{% else %}
+						<h1 class="mb-6 text-2xl font-bold text-orange-400 lg:text-4xl">Votre assistant personnel pour simplifier la gestion de vos candidatures !</h1>
+						<p class="mb-8 text-base lg:text-lg">
+							<br>Générez automatiquement des lettres de motivation sur-mesure et des messages LinkedIn professionnels en quelques clics.
+                            <br> Optimisez votre recherche d'emploi et laissez-nous vous accompagner vers le succès !
+						</p>
+						<div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+							<a href="{{ path('app_login') }}" class="inline-block px-6 py-3 text-center text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+								Commencer
+							</a>
+                            </div>
+							<div>
+								<p class="mt-3 text-gray-500 mtext-xs">Gratuit à vie. Aucune carte de crédit nécessaire.</p> 
+							</div>
+						
+					{% endif %}
+				</div>
 
-    <!-- Section des offres d'emploi -->
-    <h2 class="mt-16 mb-8 text-4xl font-bold text-gray-800">Offres d'emploi</h2>
-    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-        {% for job_offer in job_offers %}
-            <div class="overflow-hidden transition duration-300 transform bg-white rounded-lg shadow-md hover:scale-105">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-800">{{ job_offer.title }}</h3>
-                    <p class="text-gray-600">{{ job_offer.company }}</p>
-                    <p class="mt-2 text-sm text-gray-500"><i class="fas fa-map-marker-alt"></i> {{ job_offer.location }}</p>
-                    <p class="mt-1 text-sm text-gray-500"><i class="fas fa-money-bill-wave"></i> {{ job_offer.salary }}</p>
-                    <a href="{{ path('app_job_offer_show', {id: job_offer.id}) }}" 
-                       class="inline-block mt-4 text-orange-400 hover:underline">
-                        Voir les détails
-                    </a>
-                </div>
-            </div>
-        {% else %}
-            <p class="col-span-4 text-center text-gray-500">Aucune offre d'emploi disponible pour le moment.</p>
-        {% endfor %}
-    </div>
-
-    <div class="mt-8 text-right">
-        <a href="{{ path('app_job_offer_new') }}" class="px-4 py-2 text-white bg-orange-400 rounded-md hover:bg-orange-500">
-            Ajouter une offre
-        </a>
-    </div>
-</div>
+				{# Right Content - Image #}
+				<div class="flex items-center justify-center order-1 lg:order-2">
+					<img src="{{ asset('assets/images/home.jpg') }}" alt="Illustration" class="w-full max-w-lg">
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}
