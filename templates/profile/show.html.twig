@@ -1,0 +1,46 @@
+{# templates/profile/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<div class="container px-4 py-8 mx-auto">
+   <div class="max-w-2xl p-6 mx-auto bg-white rounded-lg shadow-md">
+       <div class="flex items-center justify-between mb-6">
+           <h1 class="text-2xl font-bold">Mon Profil</h1>
+           <a href="{{ path('app_profile_edit') }}" class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+               Modifier
+           </a>
+       </div>
+
+       <div class="mb-6 text-center">
+           {% if app.user.image %}
+               <img src="{{ asset('uploads/profile_images/' ~ app.user.image) }}" 
+                    alt="Photo de profil" 
+                    class="object-cover w-32 h-32 mx-auto rounded-full">
+           {% else %}
+               <div class="flex items-center justify-center w-32 h-32 mx-auto bg-gray-200 rounded-full">
+                   <span class="text-4xl text-gray-500">{{ app.user.firstName|first|upper }}</span>
+               </div>
+           {% endif %}
+       </div>
+
+       <div class="grid grid-cols-1 gap-4">
+           <div class="pb-2 border-b">
+               <label class="text-sm text-gray-600">Prénom</label>
+               <div class="font-medium">{{ app.user.firstName }}</div>
+           </div>
+           
+           <div class="pb-2 border-b">
+               <label class="text-sm text-gray-600">Nom</label>
+               <div class="font-medium">{{ app.user.lastName }}</div>
+           </div>
+           
+           <div class="pb-2 border-b">
+               <label class="text-sm text-gray-600">Email</label>
+               <div class="font-medium">{{ app.user.email }}</div>
+           </div>
+       </div>
+   </div>
+</div>
+{% endblock %}
