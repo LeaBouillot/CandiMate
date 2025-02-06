@@ -1,4 +1,4 @@
-{# Navbar template #}
+<!-- Navbar template -->
 <nav class="text-white bg-gray-800">
     <div class="container flex items-center justify-between px-6 py-4 mx-auto">
         <!-- Logo -->
@@ -10,15 +10,15 @@
         <!-- Desktop Menu -->
         <ul class="items-center hidden space-x-8 md:flex">
             <li><a href="/" class="hover:text-blue-400">Home</a></li>
-            <li><a href="/job-offers" class="hover:text-blue-400">Job Offer</a></li>
             <li><a href="/dashboard" class="hover:text-blue-400">Dashboard</a></li>
+            <li><a href="/job-offers" class="hover:text-blue-400">Job Offer</a></li>
             <li><a href="/kanban" class="hover:text-blue-400">Kanban</a></li>
             <li><a href="/job-offers/new" class="hover:text-blue-400">New job</a></li>
 
             <!-- User Menu -->
             {% if app.user %}
-                <li class="relative group">
-                    <button class="flex items-center focus:outline-none">
+                <li class="relative">
+                    <button id="userMenuButton" class="flex items-center focus:outline-none">
                         <div class="flex items-center justify-center w-10 h-10 font-semibold text-white bg-blue-500 rounded-full">
                             {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
                         </div>
@@ -27,7 +27,7 @@
                         </svg>
                     </button>
                     <!-- Dropdown Menu -->
-                    <div class="absolute right-0 hidden w-48 py-2 mt-2 bg-white rounded-md shadow-xl group-hover:block">
+                    <div id="userDropdown" class="absolute right-0 hidden w-48 py-2 mt-2 bg-white rounded-md shadow-xl">
                         <div class="px-4 py-2 text-sm text-gray-700">
                             <div class="font-medium">{{ app.user.firstName }} {{ app.user.lastName }}</div>
                             <div class="text-sm text-gray-500">{{ app.user.email }}</div>
@@ -47,7 +47,6 @@
                     </a>
                 </li>
             {% endif %}
-            
         </ul>
 
         <!-- Mobile Menu Button -->
@@ -119,3 +118,45 @@
         </ul>
     </div>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // User dropdown toggle
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userDropdown = document.getElementById('userDropdown');
+    let isUserDropdownOpen = false;
+
+    if (userMenuButton && userDropdown) {
+        userMenuButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            isUserDropdownOpen = !isUserDropdownOpen;
+            userDropdown.classList.toggle('hidden', !isUserDropdownOpen);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (isUserDropdownOpen && !userDropdown.contains(e.target) && !userMenuButton.contains(e.target)) {
+                userDropdown.classList.add('hidden');
+                isUserDropdownOpen = false;
+            }
+        });
+
+        // Prevent dropdown from closing when clicking inside it
+        userDropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    }
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    let isMobileMenuOpen = false;
+
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+            isMobileMenuOpen = !isMobileMenuOpen;
+            mobileMenu.classList.toggle('hidden', !isMobileMenuOpen);
+        });
+    }
+});
+</script>

@@ -30,14 +30,15 @@ class ProfileController extends AbstractController
        $user = $this->getUser();
        $form = $this->createForm(ProfileType::class, $user);
        $form->handleRequest($request);
-
+   
        if ($form->isSubmitted() && $form->isValid()) {
            $imageFile = $form->get('imageFile')->getData();
            
            if ($imageFile) {
+               // Si une image est téléchargée, on gère le fichier
                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                $newFilename = $originalFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-
+   
                try {
                    $imageFile->move(
                        $this->getParameter('profile_images_directory'),
@@ -48,15 +49,18 @@ class ProfileController extends AbstractController
                    $this->addFlash('error', 'Error uploading image');
                    return $this->redirectToRoute('app_profile_edit');
                }
+           } else {
+               // Si aucune image n'a été téléchargée, on assigne l'image par défaut
+               $user->setImage('default.png');
            }
-
+   
            $entityManager->flush();
            $this->addFlash('success', 'Profile updated successfully');
            return $this->redirectToRoute('app_profile_show');
        }
-
+   
        return $this->render('profile/edit.html.twig', [
            'form' => $form->createView(),
        ]);
-   }
+   }   
 }
