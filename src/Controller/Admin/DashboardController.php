@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\JobOffer;
 
-// #[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 class DashboardController extends AbstractController
 {#[Route('/admin/dashboard', name: 'app_admin_dashboard')]
     public function index(EntityManagerInterface $em): Response

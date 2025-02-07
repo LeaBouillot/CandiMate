@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
 
 #[Route('/admin')]
-// #[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_ADMIN')]
 class UserCrudController extends AbstractController
 {
    #[Route('/users', name: 'app_admin_users')]
