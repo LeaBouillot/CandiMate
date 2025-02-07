@@ -19,11 +19,39 @@ use Symfony\Component\HttpFoundation\Request;
 #[IsGranted('ROLE_USER')]
 class LinkedInMessageController extends AbstractController
 {
+    #[Route('/list/{id}', name: 'app_linkedin_list', methods: ['GET'])]
+    public function list(int $id, JobOfferRepository $jobOfferRepository): Response
+    {
+        $jobOffer = $jobOfferRepository->find($id);
+        
+        if (!$jobOffer) {
+            throw $this->createNotFoundException('L\'offre d\'emploi n\'existe pas.');
+        }
+
+        // Vérifier que l'utilisateur est propriétaire de l'offre
+        if ($jobOffer->getAppUser() !== $this->getUser()) {
+            $this->addFlash('error', 'Vous n\'êtes pas autorisé à voir ces messages.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        return $this->render('linkedin_message/list.html.twig', [
+            'linkedInMessages' => $jobOffer->getLinkedInMessages(),
+            'jobOffer' => $jobOffer
+        ]);
+    }
+
     #[Route('/generate/{id}', name: 'app_linkedin_generate', methods: ['GET'])]
     public function generate(
-        JobOffer $jobOffer,
+        int $id,
+        JobOfferRepository $jobOfferRepository,
         EntityManagerInterface $em
     ): Response {
+        $jobOffer = $jobOfferRepository->find($id);
+        
+        if (!$jobOffer) {
+            throw $this->createNotFoundException('L\'offre d\'emploi n\'existe pas.');
+        }
+
         // Vérifier que l'utilisateur est propriétaire de l'offre
         if ($jobOffer->getAppUser() !== $this->getUser()) {
             $this->addFlash('error', 'Vous n\'êtes pas autorisé à générer un message pour cette offre.');
@@ -33,13 +61,14 @@ class LinkedInMessageController extends AbstractController
         try {
             $user = $this->getUser();
             $prompt = "Génère un message LinkedIn court et accrocheur (maximum 200 mots) pour postuler au poste de {$jobOffer->getTitle()} chez {$jobOffer->getCompany()}. " .
-                "Le message doit commencer par 'Bonjour Mme. Mr. " . ($jobOffer->getContactPerson() ?: "Madame, Monsieur") . ",' et doit :" .
+                "Le message doit commencer par 'Bonjour " . ($jobOffer->getContactPerson() ?: "Madame, Monsieur") . ",' et doit :" .
                 "- Être professionnel et direct" .
                 "- Inclure une accroche percutante" .
                 "- Mentionner 2-3 points clés sur ma valeur ajoutée" .
                 "- Se terminer par une invitation à échanger" .
                 "Signature : {$user->getFirstName()} {$user->getLastName()}" .
                 "Ajoute <br> pour chaque saut de ligne.";
+
             // Générer le contenu via Gemini API
             $yourApiKey = $this->getParameter('GEMINI_API_KEY');
             $client = Gemini::client($yourApiKey);
@@ -62,7 +91,7 @@ class LinkedInMessageController extends AbstractController
         }
     }
 
-    #[Route('/{id}', name: 'app_linkedin_show', methods: ['GET'])]
+    #[Route('/show/{id}', name: 'app_linkedin_show', methods: ['GET'])]
     public function show(LinkedInMessage $linkedInMessage): Response
     {
         if ($linkedInMessage->getAppUser() !== $this->getUser()) {
@@ -78,7 +107,7 @@ class LinkedInMessageController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'app_linkedin_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'app_linkedin_delete', methods: ['POST'])]
     public function delete(
         LinkedInMessage $linkedInMessage,
         EntityManagerInterface $em,
@@ -90,25 +119,24 @@ class LinkedInMessageController extends AbstractController
         }
 
         try {
+            $jobOfferId = $linkedInMessage->getJobOffer()->getId();
             $em->remove($linkedInMessage);
             $em->flush();
 
             $this->addFlash('success', 'Message LinkedIn supprimé avec succès.');
-            return $this->redirectToRoute('app_job_offer_show', [
-                'id' => $linkedInMessage->getJobOffer()->getId()
-            ]);
+            return $this->redirectToRoute('app_job_offer_show', ['id' => $jobOfferId]);
         } catch (\Exception $e) {
             $this->addFlash('error', 'Une erreur est survenue lors de la suppression.');
             return $this->redirectToRoute('app_linkedin_show', ['id' => $linkedInMessage->getId()]);
         }
     }
-    #[Route('/{id}/update', name: 'app_linkedin_update', methods: ['POST'])]
+
+    #[Route('/update/{id}', name: 'app_linkedin_update', methods: ['POST'])]
     public function update(
         Request $request,
         LinkedInMessage $linkedInMessage,
         EntityManagerInterface $em
     ): JsonResponse {
-        // Vérifier que l'utilisateur est propriétaire du message
         if ($linkedInMessage->getAppUser() !== $this->getUser()) {
             return new JsonResponse([
                 'success' => false,
@@ -130,7 +158,6 @@ class LinkedInMessageController extends AbstractController
                 'success' => true,
                 'message' => 'Message mis à jour avec succès'
             ]);
-
         } catch (\Exception $e) {
             return new JsonResponse([
                 'success' => false,

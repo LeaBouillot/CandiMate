@@ -153,23 +153,24 @@
                                             </a>
                                             
                                             {# Messages LinkedIn #}
-                                            {% if offer.linkedInMessages|length > 0 %}
-                                                <a href="{{ path('app_linkedin_show', {'id': offer.linkedInMessages|first.id}) }}" 
-                                                   class="text-indigo-600 transition-colors hover:text-indigo-900">
-                                                    <span class="flex items-center">
-                                                        <i class="fab fa-linkedin"></i>
-                                                        <span class="ml-1">Messages ({{ offer.linkedInMessages|length }})</span>
-                                                    </span>
-                                                </a>
-                                            {% else %}
-                                                <a href="{{ path('app_linkedin_generate', {'id': offer.id}) }}" 
-                                                   class="text-gray-600 transition-colors hover:text-gray-900">
-                                                    <span class="flex items-center">
-                                                        <i class="fas fa-plus-circle"></i>
-                                                        <span class="ml-1">Message LinkedIn</span>
-                                                    </span>
-                                                </a>
-                                            {% endif %}
+                                            {# Messages LinkedIn - CODE CORRIGÉ #}
+{% if offer.linkedInMessages|length > 0 %}
+    <a href="{{ path('app_linkedin_list', {'id': offer.id}) }}" 
+       class="text-indigo-600 transition-colors hover:text-indigo-900">
+        <span class="flex items-center">
+            <i class="fab fa-linkedin"></i>
+            <span class="ml-1">Messages ({{ offer.linkedInMessages|length }})</span>
+        </span>
+    </a>
+{% else %}
+    <a href="{{ path('app_linkedin_generate', {'id': offer.id}) }}" 
+       class="text-gray-600 transition-colors hover:text-gray-900">
+        <span class="flex items-center">
+            <i class="fas fa-plus-circle"></i>
+            <span class="ml-1">Message LinkedIn</span>
+        </span>
+    </a>
+{% endif %}
                                             
                                             {# Lettres de motivation #}
                                             {% if offer.coverLetters|length > 0 %}
