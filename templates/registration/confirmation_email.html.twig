@@ -1,4 +1,45 @@
-<!DOCTYPE html>
+
+<h1>Confirmez votre compte Candimate</h1>
+
+<p>
+    Bonjour {{ user.firstName }},
+</p>
+
+<p>
+    Merci de vous être inscrit sur Candimate. Pour finaliser votre inscription, veuillez cliquer sur le lien ci-dessous :
+</p>
+
+<p>
+    <a href="{{ signedUrl }}">Confirmer mon compte</a>
+</p>
+
+<p>
+    Ce lien expirera dans 24 heures.
+</p>
+
+<p>
+    Cordialement,<br>
+    L'équipe Candimate
+</p>
+
+
+{# {% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Confirmez votre email</h1>
+
+<p>
+    Bonjour {{ user.firstName }},<br><br>
+    Merci de vous être inscrit sur Candimate. Veuillez cliquer sur le lien ci-dessous pour confirmer votre adresse email :<br><br>
+    <a href="{{ signedUrl }}">Confirmer mon email</a><br><br>
+    Ce lien expirera dans 24 heures.<br><br>
+    Cordialement,<br>
+    L'équipe Candimate
+</p>
+{% endblock %} #}
+
+{# <!DOCTYPE html>
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -74,7 +115,7 @@
             </div>
         </div>
     </body>
-</html>
+</html> #}
 {# <h1>Confirm your email</h1>
 
 <p>
