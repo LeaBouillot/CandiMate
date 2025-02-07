@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0011bdb9adb6f91e0dda42200350d4f6",
+    "content-hash": "4df430747634e8ab8d0e8bb7f2e49541",
     "packages": [
         {
             "name": "composer/semver",
@@ -1303,16 +1303,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v4.24.0",
+            "version": "v4.24.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "f641b359bfe23406469453f274dde167ecafd3a4"
+                "reference": "fb8728635620d716cc007c8ad7ae819b4d84a027"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/f641b359bfe23406469453f274dde167ecafd3a4",
-                "reference": "f641b359bfe23406469453f274dde167ecafd3a4",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/fb8728635620d716cc007c8ad7ae819b4d84a027",
+                "reference": "fb8728635620d716cc007c8ad7ae819b4d84a027",
                 "shasum": ""
             },
             "require": {
@@ -1392,7 +1392,7 @@
             ],
             "support": {
                 "issues": "https://github.com/EasyCorp/EasyAdminBundle/issues",
-                "source": "https://github.com/EasyCorp/EasyAdminBundle/tree/v4.24.0"
+                "source": "https://github.com/EasyCorp/EasyAdminBundle/tree/v4.24.1"
             },
             "funding": [
                 {
@@ -1400,7 +1400,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-31T19:11:07+00:00"
+            "time": "2025-02-06T18:39:58+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -8220,16 +8220,16 @@
         },
         {
             "name": "symfonycasts/tailwind-bundle",
-            "version": "v0.6.1",
+            "version": "v0.7.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SymfonyCasts/tailwind-bundle.git",
-                "reference": "28db7cfe23758cffc79f25a7c75cdb2fca52e9d9"
+                "reference": "81c9e6ff2bb1a95e67fc6af04ca87fccdcf55aa4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SymfonyCasts/tailwind-bundle/zipball/28db7cfe23758cffc79f25a7c75cdb2fca52e9d9",
-                "reference": "28db7cfe23758cffc79f25a7c75cdb2fca52e9d9",
+                "url": "https://api.github.com/repos/SymfonyCasts/tailwind-bundle/zipball/81c9e6ff2bb1a95e67fc6af04ca87fccdcf55aa4",
+                "reference": "81c9e6ff2bb1a95e67fc6af04ca87fccdcf55aa4",
                 "shasum": ""
             },
             "require": {
@@ -8269,9 +8269,9 @@
             ],
             "support": {
                 "issues": "https://github.com/SymfonyCasts/tailwind-bundle/issues",
-                "source": "https://github.com/SymfonyCasts/tailwind-bundle/tree/v0.6.1"
+                "source": "https://github.com/SymfonyCasts/tailwind-bundle/tree/v0.7.1"
             },
-            "time": "2024-11-06T18:41:22+00:00"
+            "time": "2025-01-23T14:54:07+00:00"
         },
         {
             "name": "symfonycasts/verify-email-bundle",

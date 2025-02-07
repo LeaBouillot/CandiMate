@@ -2,69 +2,35 @@
 
 namespace App\Controller\Admin;
 
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Entity\User;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
-class UserCrudController extends AbstractCrudController
+#[Route('/admin')]
+// #[IsGranted('ROLE_ADMIN')]
+class UserCrudController extends AbstractController
 {
-    public static function getEntityFqcn(): string
-    {
-        return User::class;
-    }
+   #[Route('/users', name: 'app_admin_users')]
+   public function index(UserRepository $userRepository): Response
+   {
+       $users = $userRepository->findAll();
+       
+       return $this->render('admin/users.html.twig', [
+           'users' => $users
+       ]);
+   }
 
-    public function configureCrud(Crud $crud): Crud
-    {
-        return $crud
-            ->setEntityLabelInSingular('Utilisateur')
-            ->setEntityLabelInPlural('Utilisateurs')
-            ->setPageTitle('index', 'Gestion des utilisateurs')
-            ->setPaginatorPageSize(10);
-    }
-
-    public function configureFields(string $pageName): iterable
-    {
-        yield IdField::new('id')->hideOnForm();
-        yield EmailField::new('email');
-        yield TextField::new('firstName', 'Prénom');
-        yield TextField::new('lastName', 'Nom');
-        yield ArrayField::new('roles');
-        yield ImageField::new('image')
-            ->setBasePath('uploads/images/users')
-            ->setUploadDir('public/uploads/images/users')
-            ->setUploadedFileNamePattern('[randomhash].[extension]')
-            ->setRequired(false);
-        yield DateTimeField::new('createdAt', 'Créé le')->hideOnForm();
-        yield DateTimeField::new('updatedAt', 'Modifié le')->hideOnForm();
-        yield AssociationField::new('jobOffers', 'Offres d\'emploi')->hideOnForm();
-        yield AssociationField::new('linkedInMessages', 'Messages LinkedIn')->hideOnForm();
-        yield AssociationField::new('coverLetters', 'Lettres de motivation')->hideOnForm();
-    }
-
-    public function configureActions(Actions $actions): Actions
-    {
-        return $actions
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
-                return $action->setLabel('Ajouter un utilisateur');
-            })
-            ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
-                return $action->setLabel('Modifier');
-            })
-            ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
-                return $action->setLabel('Voir');
-            })
-            ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
-                return $action->setLabel('Supprimer');
-            });
-    }
+   #[Route('/user/{id}/delete', name: 'app_admin_user_delete', methods: ['POST'])]
+   public function delete(User $user, EntityManagerInterface $em): Response 
+   {
+       $em->remove($user);
+       $em->flush();
+       
+       $this->addFlash('success', 'User deleted successfully');
+       return $this->redirectToRoute('app_admin_users');
+   }
 }
