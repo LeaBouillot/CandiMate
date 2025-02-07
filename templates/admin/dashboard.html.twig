@@ -1,0 +1,69 @@
+{# templates/admin/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Job Offers Management</h1>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="px-6 py-3 border-b">Title</th>
+                    <th class="px-6 py-3 border-b">Company</th>
+                    <th class="px-6 py-3 border-b">User</th>
+                    <th class="px-6 py-3 border-b">Status</th>
+                    <th class="px-6 py-3 border-b">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job_offer in job_offers %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 border-b">{{ job_offer.title }}</td>
+                        <td class="px-6 py-4 border-b">{{ job_offer.company }}</td>
+                        <td class="px-6 py-4 border-b">
+                            {% if job_offer.appUser %}
+                                {{ job_offer.appUser.email }}
+                            {% else %}
+                                <span class="text-gray-400">No user assigned</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 border-b">{{ job_offer.status.value }}</td>
+                        <td class="px-6 py-4 border-b">
+                            <div class="flex space-x-2">
+                                {# <a href="{{ path('app_job_offer_edit', {'id': job_offer.id}) }}" 
+                                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                    Edit
+                                </a> #}
+                                <form method="post" action="{{ path('app_admin_job_offer_delete', {'id': job_offer.id}) }}" 
+                                      onsubmit="return confirm('Are you sure you want to delete this job offer?');" 
+                                      class="inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ job_offer.id) }}">
+                                    <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center">No job offers found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{# 27-Modifions le modèle pour gérer les cas où l'utilisateur peut être null:
+Cela évitera l'erreur en vérifiant si appUser existe avant d'essayer d'accéder à sa propriété de courrier électronique.
+
+Nécessite ROLE_ADMIN pour l'accès
+Répertorie toutes les offres d'emploi avec les informations de l'utilisateur
+Fournit des fonctionnalités d'édition et de suppression
+Utilise Tailwind CSS pour le style
+Inclut la protection CSRF pour les actions de suppression #}

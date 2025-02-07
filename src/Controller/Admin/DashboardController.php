@@ -2,77 +2,40 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\User;
-use App\Entity\JobOffer;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use App\Repository\JobOfferRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Entity\JobOffer;
 
-#[IsGranted('ROLE_USER')]
-class DashboardController extends AbstractDashboardController
-{
-    #[Route('/admin', name: 'admin')]
-    public function index(): Response
+// #[IsGranted('ROLE_ADMIN')]
+class DashboardController extends AbstractController
+{#[Route('/admin/dashboard', name: 'app_admin_dashboard')]
+    public function index(EntityManagerInterface $em): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+        $jobOffers = $em->createQueryBuilder()
+            ->select('j, u')
+            ->from('App\Entity\JobOffer', 'j')
+            ->leftJoin('j.app_user', 'u')
+            ->getQuery()
+            ->getResult();
+        
+        return $this->render('admin/dashboard.html.twig', [
+            'job_offers' => $jobOffers
+        ]);
     }
 
-    public function configureDashboard(): Dashboard
+    #[Route('/admin/job-offer/{id}/delete', name: 'app_admin_job_offer_delete', methods: ['POST'])]
+    public function delete(JobOffer $jobOffer, EntityManagerInterface $entityManager): Response
     {
-        return Dashboard::new()
-            ->setTitle('Admin Panel');
-    }
-
-    public function configureMenuItems(): iterable
-    {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToCrud('Users', 'fa fa-user', User::class);
-        yield MenuItem::linkToCrud('Jobs', 'fa fa-briefcase', JobOffer::class);
+        $entityManager->remove($jobOffer);
+        $entityManager->flush();
+        
+        $this->addFlash('success', 'Job offer deleted successfully');
+        return $this->redirectToRoute('app_admin_dashboard');
     }
 }
 
-
-
-// #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
-// class DashboardController extends AbstractDashboardController
-// {
-//     public function index(): Response
-//     {
-//         return parent::index();
-
-//         // Option 1. You can make your dashboard redirect to some common page of your backend
-//         //
-//         // 1.1) If you have enabled the "pretty URLs" feature:
-//         // return $this->redirectToRoute('admin_user_index');
-//         //
-//         // 1.2) Same example but using the "ugly URLs" that were used in previous EasyAdmin versions:
-//         // $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-//         // return $this->redirect($adminUrlGenerator->setController(OneOfYourCrudController::class)->generateUrl());
-
-//         // Option 2. You can make your dashboard redirect to different pages depending on the user
-//         //
-//         // if ('jane' === $this->getUser()->getUsername()) {
-//         //     return $this->redirectToRoute('...');
-//         // }
-
-//         // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-//         // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-//         //
-//         // return $this->render('some/path/my-dashboard.html.twig');
-//     }
-
-//     public function configureDashboard(): Dashboard
-//     {
-//         return Dashboard::new()
-//             ->setTitle('CandiMate');
-//     }
-
-//     public function configureMenuItems(): iterable
-//     {
-//         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-//         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
-//     }
-// }
+// 18-joindre l'entité Utilisateur à JobOffer pour garantir que  disposition de données complètes : Cela garantit que toutes les données utilisateur sont chargées correctement via une jointure, évitant ainsi l'erreur introuvable.
