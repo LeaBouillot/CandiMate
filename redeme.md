@@ -90,6 +90,13 @@ CREATING SECURITY CONTROLLER AND REGISTRATION FORM
     symfony console make:registration-form
          composer require symfonycasts/verify-email-bundle 
 
+Configuring Symfony Mailer
+    `https://mailtrap.io/blog/send-emails-in-symfony/`
+    composer require symfony/mailer
+    src/Controller/MailerController.php
+
+
+
 INSTALLED UX ICON FROM SYMFONY 
     composer require symfony/ux-twig-component
     composer require symfony/ux-icon
