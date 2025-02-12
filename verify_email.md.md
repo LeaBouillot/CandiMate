@@ -1,4 +1,4 @@
-VerifyEmailBundle: Love Confirming Emails
+VerifyEmailBundle: Confirming Emails
 `https://github.com/SymfonyCasts/verify-email-bundle`
 
 vos utilisateurs ont une adresse e-mail valide.

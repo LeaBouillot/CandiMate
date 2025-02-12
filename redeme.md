@@ -9,7 +9,6 @@ INSTALLING TAILWIND
     composer require symfonycasts/tailwind-bundle
     php bin/console tailwind:init
     php bin/console tailwind:build --watch
-    symfony console tailwind:build --watch
 
 
 ENTITY

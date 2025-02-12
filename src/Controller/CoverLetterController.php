@@ -5,8 +5,6 @@ namespace App\Controller;
 use Gemini;
 use App\Entity\CoverLetter;
 use App\Entity\JobOffer;
-use App\Repository\CoverLetterRepository;
-use App\Repository\JobOfferRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
