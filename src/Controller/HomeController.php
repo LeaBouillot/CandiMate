@@ -12,10 +12,7 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home', methods: ['GET'])]
     public function index(JobOfferRepository $jr): Response
     {
-        $jobOffers = $jr->findAll();
-        return $this->render('home/index.html.twig', [
-            'job_offers' => $jobOffers,
-        ]);
+        return $this->render('home/index.html.twig', []);
     }
 
     #[Route('/legal_notice', name: 'app_legal_notice')]
