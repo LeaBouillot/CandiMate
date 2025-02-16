@@ -143,11 +143,26 @@
    ```
 
    - Pour utiliser Composer :
-
    ```
-   php composer.phar install --no-dev --optimize-autoloader
+   php composer.phar
+   ```
+
+   - ajout de ce code pour afficher l'erreur au niveau de PHP qui n'était pas visible auparavant avec l'incompatibilité des versions php php_value display_errors 1 :
+   ```
+   php_value display_startup_errors 1
+   ```
+
+   - Pour ne pas avoir un problème de debug_bundle donc j'ai changé le fichier .env:
+   ```
+   app_env= prod 
+   ```
+   
+   - installation de toutes les dépendances via git bash (connexion via ssh)
+   ```
+   install --no-dev --optimize-autoloader
    php bin/console cache:clear
    ```
+   
 
 8. **Vérifier le déploiement**
    - J’ai accédé à mon domaine pour vérifier que mon projet Symfony est correctement déployé.
