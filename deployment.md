@@ -31,19 +31,7 @@
 
 4. **Configurer le serveur web**
 
-   4.1 **Fichier `.htaccess`**
-
-   - Le fichier `.htaccess` dans le répertoire `public` est correctement configuré pour rediriger toutes les requêtes vers `index.php` :
-
-   ```
-   <IfModule mod_rewrite.c>
-       RewriteEngine On
-       RewriteCond %{REQUEST_FILENAME} !-f
-       RewriteRule ^(.*)$ index.php [QSA,L]
-   </IfModule>
-   ```
-
-   4.2 **Activer la réécriture d'URL**
+   4.1 **Fichier `.htaccess`, Activer la réécriture d'URL**
 
    - J’ai créé un fichier `.htaccess` dans le répertoire `public` pour activer la réécriture d'URL :
 
@@ -92,7 +80,7 @@
    </IfModule>
    ```
 
-   4.3 **Redirection vers le répertoire public**
+   4.2 **Redirection vers le répertoire public**
 
    - J’ai créé un fichier `.htaccess` à la racine pour rediriger tout le trafic vers le répertoire `public` :
 
