@@ -21,11 +21,11 @@
    Exemple de ce que vous pourriez avoir dans le fichier `.env` :
 
    ```
+   APP_ENV=prod
+   APP_DEBUG=false
+   APP_SECRET="943a1812345...."
    DATABASE_URL="mysql://username:password@host/database_name?serverVersion=10.11.10-MariaDB&charset=utf8mb4"
    GEMINI_API_KEY="AIzaSy..."
-
-   APP_ENV=prod
-   APP_SECRET="943a1812345...."
    MAILER_DSN="smtp://..."
    ```
 
@@ -152,13 +152,6 @@
 
    ```
    php_value display_startup_errors 1
-   ```
-
-   - Pour ne pas avoir un problème de debug_bundle donc j'ai changé le fichier .env:
-   ```
-   APP_ENV=prod
-   APP_DEBUG=false
-   APP_SECRET="943a1812345...."
    ```
 
    - installation de toutes les dépendances via git bash (connexion via ssh)
