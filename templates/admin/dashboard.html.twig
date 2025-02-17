@@ -1,69 +1,164 @@
-{# templates/admin/dashboard.html.twig #}
-{% extends 'base.html.twig' %}
-
-{% block title %}Admin Dashboard{% endblock %}
-
-{% block body %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Job Offers Management</h1>
-
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="px-6 py-3 border-b">Title</th>
-                    <th class="px-6 py-3 border-b">Company</th>
-                    <th class="px-6 py-3 border-b">User</th>
-                    <th class="px-6 py-3 border-b">Status</th>
-                    <th class="px-6 py-3 border-b">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for job_offer in job_offers %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 border-b">{{ job_offer.title }}</td>
-                        <td class="px-6 py-4 border-b">{{ job_offer.company }}</td>
-                        <td class="px-6 py-4 border-b">
-                            {% if job_offer.appUser %}
-                                {{ job_offer.appUser.email }}
-                            {% else %}
-                                <span class="text-gray-400">No user assigned</span>
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-4 border-b">{{ job_offer.status.value }}</td>
-                        <td class="px-6 py-4 border-b">
-                            <div class="flex space-x-2">
-                                {# <a href="{{ path('app_job_offer_edit', {'id': job_offer.id}) }}" 
-                                   class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                    Edit
-                                </a> #}
-                                <form method="post" action="{{ path('app_admin_job_offer_delete', {'id': job_offer.id}) }}" 
-                                      onsubmit="return confirm('Are you sure you want to delete this job offer?');" 
-                                      class="inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ job_offer.id) }}">
-                                    <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center">No job offers found</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% extends '@EasyAdmin/page/content.html.twig' %} {% block page_title %}Tableau
+de bord{% endblock %} {% block main %}
+<div class="container">
+  {# Statistiques #}
+  <div class="row">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Utilisateurs</h5>
+          <p class="card-text display-6">{{ stats.users_count }}</p>
+        </div>
+      </div>
     </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Offres d'emploi</h5>
+          <p class="card-text display-6">{{ stats.job_offers_count }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-info mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Lettres de motivation</h5>
+          <p class="card-text display-6">{{ stats.cover_letters_count }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Messages LinkedIn</h5>
+          <p class="card-text display-6">{{ stats.linkedin_messages_count }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Derniers utilisateurs et offres d'emploi #}
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Derniers utilisateurs inscrits</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Nom</th>
+                  <th>Date d'inscription</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in recent_users %}
+                <tr>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.firstName }} {{ user.lastName }}</td>
+                  <td>{{ user.createdAt|date('d/m/Y H:i') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="3" class="text-center">
+                    Aucun utilisateur trouvé
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Dernières offres d'emploi</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Entreprise</th>
+                  <th>Statut</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for job in recent_jobs %}
+                <tr>
+                  <td>{{ job.title }}</td>
+                  <td>{{ job.company }}</td>
+                  <td>
+                    <span
+                      class="badge bg-{{
+                        job.status.value == 'Accepté'
+                          ? 'success'
+                          : job.status.value == 'Refusé'
+                          ? 'danger'
+                          : job.status.value == 'En attente'
+                          ? 'warning'
+                          : job.status.value == 'Entretien'
+                          ? 'info'
+                          : 'primary'
+                      }}"
+                    >
+                      {{ job.status.value }}
+                    </span>
+                  </td>
+                  <td>{{ job.createdAt|date('d/m/Y') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="4" class="text-center">Aucune offre trouvée</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<style>
+  .container {
+    padding: 20px;
+  }
+  .card {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    margin-bottom: 1rem;
+  }
+  .card-header {
+    background-color: #f8f9fc;
+    border-bottom: 1px solid #e3e6f0;
+    padding: 1rem;
+  }
+  .card-body {
+    padding: 1rem;
+  }
+  .table > :not(caption) > * > * {
+    padding: 0.75rem;
+  }
+  .table {
+    margin-bottom: 0;
+  }
+  .badge {
+    font-size: 0.85em;
+    padding: 0.35em 0.65em;
+  }
+  .display-6 {
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+  }
+</style>
 {% endblock %}
-
-{# 27-Modifions le modèle pour gérer les cas où l'utilisateur peut être null:
-Cela évitera l'erreur en vérifiant si appUser existe avant d'essayer d'accéder à sa propriété de courrier électronique.
-
-Nécessite ROLE_ADMIN pour l'accès
-Répertorie toutes les offres d'emploi avec les informations de l'utilisateur
-Fournit des fonctionnalités d'édition et de suppression
-Utilise Tailwind CSS pour le style
-Inclut la protection CSRF pour les actions de suppression #}

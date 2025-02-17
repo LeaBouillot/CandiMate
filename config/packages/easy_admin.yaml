@@ -1,0 +1,6 @@
+easy_admin:
+    entities:
+        - App\Entity\User
+        - App\Entity\JobOffer
+        - App\Entity\CoverLetter
+        - App\Entity\LinkedInMessage
