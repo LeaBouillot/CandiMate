@@ -52,8 +52,12 @@ class JobOfferType extends AbstractType
             ->add('link', UrlType::class, [
                 'label' => 'Lien de l\'offre',
                 'required' => false,
+                'default_protocol' => 'https',  // Ajout du protocole par défaut
                 'constraints' => [
-                    new Url(['message' => 'Veuillez entrer une URL valide']),
+                    new Url([
+                        'message' => 'Veuillez entrer une URL valide',
+                        'requireTld' => true  // Explicitement définir requireTld
+                    ]),
                     new Length([
                         'max' => 120,
                         'maxMessage' => 'L\'URL ne peut pas dépasser {{ limit }} caractères'
@@ -137,7 +141,7 @@ class JobOfferType extends AbstractType
                 ],
                 'placeholder' => 'Choisir un statut'
             ])
-
+           
         //     ->add('save', SubmitType::class, [
         //         'label' => 'Enregistrer',
         //         'attr' => [
