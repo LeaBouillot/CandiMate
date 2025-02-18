@@ -95,8 +95,6 @@ Configuring Symfony Mailer
     composer require symfony/mailer
     src/Controller/MailerController.php
 
-
-
 INSTALLED UX ICON FROM SYMFONY 
     composer require symfony/ux-twig-component
     composer require symfony/ux-icon
@@ -107,14 +105,6 @@ KANBAN controller
 
 ApiJobOfferController
     symfony console make:controller ApiJobOffer
-
-
-SWUP 
-    composer require symfony/ux-swup
-
-LIVE COMPONENT FOR A JOB OFFER SEARCH ================================== NOT WORKING FOR SEARCH
-    composer require symfony/ux-live-component
-    Symfony console make:twig-component
 
     composer require symfony/security-bundle
 
