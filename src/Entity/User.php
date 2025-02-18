@@ -319,4 +319,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    // #[ORM\Column]
+    // private bool $isVerified = false;
+
+    // public function setVerified(bool $isVerified): static
+    // {
+    //     $this->isVerified = $isVerified;
+
+    //     return $this;
+    // }
+    // public function __toString()
+    // {
+    //     return $this->email;
+    // }
 }
