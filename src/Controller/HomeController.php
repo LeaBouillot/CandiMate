@@ -18,7 +18,18 @@ class HomeController extends AbstractController
     #[Route('/legal_notice', name: 'app_legal_notice')]
     public function legal(): Response
     {
-        return $this->render('home/legal_notice.html.twig', []);
+        return $this->render('home/legal_notice.html.twig', [
+            'site_url' => 'https://leabouillot.top',
+            'owner' => 'Bouillot',
+            'address' => '42 BD Paul Vaillant Couturier 93100 Montreuil',
+            'publication_manager' => 'Bouillot',
+            'webmaster' => 'Bouillot',
+            'host' => 'Hostinger – 61 Lordou Vironos st. 6023 Larnaca',
+            'dpo' => 'Bouillot',
+            'company_name' => 'Bouillot',
+            'data_controller' => 'Bouillot',
+            'jurisdiction' => 'Montreuil'
+        ]);
     }
 
     #[Route('/policy', name: 'app_policy')]
